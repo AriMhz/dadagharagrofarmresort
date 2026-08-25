@@ -1,36 +1,118 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-forest: #295B2D;
-  --color-brand-leaf: #67A63A;
-  --color-brand-sunrise: #F39C12;
-  --color-brand-farmhouse: #B22222;
+  --color-brand-forest: #19381F;
+  --color-brand-forest-dark: #0D2112;
+  --color-brand-forest-light: #2D5A36;
+  --color-brand-leaf: #528343;
+  --color-brand-gold: #C99738;
+  --color-brand-gold-light: #DFB76C;
+  --color-brand-gold-dark: #A77822;
+  --color-brand-sunrise: #E67E22;
+  --color-brand-cream: #FAF7F2;
+  --color-brand-sand: #F3EFE6;
+  --color-brand-card: #FFFFFF;
   
-  --font-sans: "Poppins", sans-serif;
-  --font-serif: "Playfair Display", serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-display: "Cormorant Garamond", Georgia, serif;
 }
 
 @layer base {
   body {
-    @apply font-sans bg-[#F9FAFB] text-gray-800 antialiased overflow-x-hidden;
+    @apply font-sans bg-[#FAF7F2] text-slate-800 antialiased overflow-x-hidden;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif text-brand-forest;
+    @apply font-serif tracking-tight;
   }
 }
 
-/* Custom Scrollbar for a premium feel */
+/* Luxury Glassmorphism */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.glass-dark {
+  background: rgba(13, 33, 18, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #D4AF37 0%, #F59E0B 50%, #C99738 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-gradient-bg {
+  background: linear-gradient(135deg, #C99738 0%, #E5B869 50%, #B88328 100%);
+}
+
+.forest-gradient-bg {
+  background: linear-gradient(135deg, #19381F 0%, #0D2112 100%);
+}
+
+/* Custom Luxury Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #F3EFE6; 
 }
 ::-webkit-scrollbar-thumb {
-  background: #67A63A; 
-  border-radius: 5px;
+  background: #C99738; 
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #295B2D; 
+  background: #19381F; 
+}
+
+/* Shake animation for invalid form inputs */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Subtle float animation */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+/* Print Styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .printable-area, .printable-area * {
+    visibility: visible;
+  }
+  .printable-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  .no-print {
+    display: none !important;
+  }
 }

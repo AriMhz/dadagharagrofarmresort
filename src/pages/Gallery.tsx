@@ -2,6 +2,7 @@ import { useState, useEffect, MouseEvent } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, ChevronLeft, ChevronRight, ZoomIn, Camera, Instagram, ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useResort } from "../context/ResortContext";
 
 export interface GalleryItem {
   id: number;
@@ -100,44 +101,48 @@ const galleryItems: GalleryItem[] = [
     category: "scenery",
     categoryLabel: "Sunset & Views",
     image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    description: "Peaceful morning fog descending gracefully over our green estate.",
+    description: "Peaceful morning mist rolling over the hills surrounding Dada Ghar.",
   },
   {
     id: 11,
-    title: "Private Balcony Overlook",
+    title: "Terrace Garden Cottages",
     category: "resort",
     categoryLabel: "Resort & Cottages",
     image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    description: "Wake up to bird songs and fresh mountain air on your private sun deck.",
+    description: "Private hillside cottages with spacious sundecks and panoramic vistas.",
   },
   {
     id: 12,
-    title: "Honey & Herbal Apiary",
+    title: "Beekeeping & Wild Honey",
     category: "farm",
     categoryLabel: "Agro Farm & Harvest",
     image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    description: "Pure wild honey harvested directly from resort bee hives.",
+    description: "Pure raw mountain honey harvested from our natural apiaries.",
   },
 ];
 
 export default function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
+  const { openBookingModal } = useResort();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const filteredItems = selectedCategory === "all"
-    ? galleryItems
-    : galleryItems.filter((item) => item.category === selectedCategory);
+  const filteredItems = galleryItems.filter((item) => {
+    if (selectedCategory === "all") return true;
+    return item.category === selectedCategory;
+  });
 
   const openLightbox = (index: number) => {
     setActiveImageIndex(index);
+    document.body.style.overflow = "hidden";
   };
 
   const closeLightbox = () => {
     setActiveImageIndex(null);
+    document.body.style.overflow = "auto";
   };
 
   const showNextImage = (e?: MouseEvent) => {
@@ -168,51 +173,53 @@ export default function Gallery() {
   }, [activeImageIndex, filteredItems.length]);
 
   return (
-    <div className="w-full bg-[#F9FAFB] min-h-screen">
+    <div className="w-full bg-[#FAF7F2] min-h-screen pt-24 pb-20 overflow-hidden">
+      
       {/* Hero Banner */}
-      <section className="relative pt-28 sm:pt-36 pb-16 sm:pb-24 bg-brand-forest text-white overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-25">
-          <img
-            src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
-            alt="Resort background"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-brand-forest/60 via-brand-forest/40 to-brand-forest" />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="relative py-16 sm:py-20 bg-gradient-to-b from-[#19381F] to-[#0D2112] text-white text-center mb-12">
+        <div className="relative z-10 max-w-4xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-amber-300 border border-white/20 text-xs font-bold uppercase tracking-widest mb-4"
           >
-            <span className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-brand-sunrise text-xs sm:text-sm font-medium mb-4 sm:mb-6 border border-white/10">
-              <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span>Visual Journey</span>
-            </span>
-            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-4 tracking-tight">
-              Resort Gallery
-            </h1>
-            <p className="max-w-2xl mx-auto text-sm sm:text-base md:text-lg text-white/85 font-light leading-relaxed px-2">
-              Explore the serene beauty, organic harvests, luxury accommodations, and unforgettable moments at Dada Ghar Agro Farm Resort.
-            </p>
+            <Camera className="w-4 h-4 text-amber-400" />
+            <span>Visual Story & Photo Tour</span>
           </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl sm:text-6xl font-serif font-bold text-white mb-4"
+          >
+            Moments at Dada Ghar
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto font-light leading-relaxed"
+          >
+            Explore our handcrafted wooden cottages, organic farm harvests, Himalayan mountain vistas, and starlit gatherings.
+          </motion.p>
         </div>
       </section>
 
-      {/* Filter Tabs - Horizontal Scroll on Mobile, Wrapped on Desktop */}
-      <section className="py-6 sm:py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex overflow-x-auto sm:flex-wrap justify-start sm:justify-center gap-2.5 sm:gap-3 pb-2 sm:pb-0 scrollbar-none snap-x">
+      {/* Filter Tabs */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        <div className="flex items-center justify-center flex-wrap gap-2.5">
           {categories.map((cat) => {
             const isActive = selectedCategory === cat.id;
             return (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`snap-start whitespace-nowrap px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${
+                className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                   isActive
-                    ? "bg-brand-leaf text-white shadow-md scale-105"
-                    : "bg-white text-gray-700 hover:bg-gray-100 hover:text-brand-forest shadow-sm border border-gray-100"
+                    ? "bg-brand-forest text-amber-300 shadow-lg scale-105 border border-amber-400/30"
+                    : "bg-white text-slate-700 hover:bg-amber-50 hover:text-brand-forest border border-gray-200"
                 }`}
               >
                 {cat.label}
@@ -222,11 +229,11 @@ export default function Gallery() {
         </div>
       </section>
 
-      {/* Gallery Grid - Responsive Columns (1 on mobile, 2 on tablet, 3 on desktop, 4 on XL screens) */}
-      <section className="pb-16 sm:pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Gallery Grid */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
         <motion.div
           layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         >
           <AnimatePresence>
             {filteredItems.map((item, index) => (
@@ -237,44 +244,40 @@ export default function Gallery() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.35 }}
-                className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-100/80 flex flex-col"
+                className="group relative bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-200/80 flex flex-col"
                 onClick={() => openLightbox(index)}
               >
-                <div className="relative h-60 sm:h-64 md:h-72 w-full overflow-hidden bg-gray-100">
+                <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-gray-100">
                   <img
                     src={item.image}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 sm:p-5 text-white">
-                    <span className="text-[10px] sm:text-xs uppercase tracking-wider font-semibold text-brand-sunrise mb-1">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5 text-white">
+                    <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wider mb-1">
                       {item.categoryLabel}
                     </span>
-                    <h3 className="text-base sm:text-lg font-serif font-bold text-white mb-1.5 leading-snug">
+                    <h3 className="font-serif font-bold text-lg leading-tight mb-1 text-white">
                       {item.title}
                     </h3>
-                    <p className="text-xs text-white/80 line-clamp-2 mb-2 font-light">
+                    <p className="text-xs text-white/90 line-clamp-2">
                       {item.description}
                     </p>
-                    <div className="inline-flex items-center space-x-1.5 text-xs font-medium text-brand-sunrise">
-                      <ZoomIn className="w-3.5 h-3.5" />
-                      <span>Tap to expand</span>
+                    <div className="mt-3 flex items-center gap-1.5 text-xs text-amber-300 font-semibold">
+                      <ZoomIn className="w-4 h-4" />
+                      <span>Click to view full photo</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 sm:p-5 flex justify-between items-center group-hover:bg-brand-forest transition-colors duration-300 mt-auto">
-                  <div className="pr-2">
-                    <span className="text-[11px] text-brand-leaf group-hover:text-brand-sunrise transition-colors font-medium block mb-0.5">
-                      {item.categoryLabel}
-                    </span>
-                    <h4 className="font-serif font-bold text-gray-800 group-hover:text-white transition-colors text-sm sm:text-base leading-snug line-clamp-1">
-                      {item.title}
-                    </h4>
+                <div className="p-4 bg-white flex items-center justify-between">
+                  <div>
+                    <h4 className="font-serif font-bold text-sm text-brand-forest">{item.title}</h4>
+                    <span className="text-[11px] text-slate-500">{item.categoryLabel}</span>
                   </div>
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-100 group-hover:bg-white/20 flex items-center justify-center transition-colors shrink-0">
-                    <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600 group-hover:text-white" />
+                  <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center group-hover:bg-brand-forest group-hover:text-amber-300 transition">
+                    <ZoomIn className="w-4 h-4" />
                   </div>
                 </div>
               </motion.div>
@@ -283,113 +286,86 @@ export default function Gallery() {
         </motion.div>
       </section>
 
-      {/* Fully Responsive Lightbox Modal */}
+      {/* Lightbox Modal */}
       <AnimatePresence>
         {activeImageIndex !== null && filteredItems[activeImageIndex] && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 md:p-10"
             onClick={closeLightbox}
+            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 sm:p-6"
           >
-            {/* Top Bar Controls */}
-            <div className="absolute top-4 sm:top-6 left-4 sm:left-6 right-4 sm:right-6 flex justify-between items-center z-20 text-white">
-              <div className="flex items-center space-x-2 sm:space-x-3">
-                <span className="text-xs font-semibold px-2.5 py-1 bg-white/20 rounded-full backdrop-blur-sm">
-                  {activeImageIndex + 1} / {filteredItems.length}
-                </span>
-                <span className="text-xs sm:text-sm font-medium hidden xs:inline-block text-brand-sunrise">
-                  {filteredItems[activeImageIndex].categoryLabel}
-                </span>
-              </div>
-
-              <button
-                onClick={closeLightbox}
-                className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all focus:outline-none"
-                aria-label="Close modal"
-              >
-                <X className="w-5 h-5 sm:w-6 sm:h-6" />
-              </button>
-            </div>
+            {/* Close Button */}
+            <button
+              onClick={closeLightbox}
+              className="absolute top-6 right-6 z-50 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition shadow-lg"
+              title="Close (Esc)"
+            >
+              <X className="w-6 h-6" />
+            </button>
 
             {/* Prev Button */}
             <button
               onClick={showPrevImage}
-              className="absolute left-2 sm:left-6 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 flex items-center justify-center text-white transition-all focus:outline-none backdrop-blur-sm"
-              aria-label="Previous image"
+              className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-50 p-3.5 bg-white/10 hover:bg-white/25 text-white rounded-full transition shadow-lg"
+              title="Previous (Arrow Left)"
             >
-              <ChevronLeft className="w-6 h-6 sm:w-7 sm:h-7" />
+              <ChevronLeft className="w-6 h-6" />
             </button>
-
-            {/* Main Image Container */}
-            <div
-              className="relative w-full max-w-5xl max-h-[85vh] flex flex-col items-center justify-center px-2"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <motion.img
-                key={filteredItems[activeImageIndex].id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.25 }}
-                src={filteredItems[activeImageIndex].image}
-                alt={filteredItems[activeImageIndex].title}
-                className="max-w-full max-h-[58vh] sm:max-h-[68vh] md:max-h-[74vh] object-contain rounded-xl shadow-2xl"
-              />
-
-              <div className="mt-3 sm:mt-4 text-center text-white max-w-2xl px-2 sm:px-4">
-                <h3 className="text-lg sm:text-2xl font-serif font-bold text-brand-sunrise mb-1">
-                  {filteredItems[activeImageIndex].title}
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-300 font-light leading-relaxed">
-                  {filteredItems[activeImageIndex].description}
-                </p>
-              </div>
-            </div>
 
             {/* Next Button */}
             <button
               onClick={showNextImage}
-              className="absolute right-2 sm:right-6 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 flex items-center justify-center text-white transition-all focus:outline-none backdrop-blur-sm"
-              aria-label="Next image"
+              className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-50 p-3.5 bg-white/10 hover:bg-white/25 text-white rounded-full transition shadow-lg"
+              title="Next (Arrow Right)"
             >
-              <ChevronRight className="w-6 h-6 sm:w-7 sm:h-7" />
+              <ChevronRight className="w-6 h-6" />
             </button>
+
+            {/* Active Image Box */}
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-5xl w-full max-h-[85vh] flex flex-col items-center justify-center"
+            >
+              <img
+                src={filteredItems[activeImageIndex].image}
+                alt={filteredItems[activeImageIndex].title}
+                className="max-h-[70vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl"
+              />
+              
+              <div className="mt-4 text-center text-white max-w-2xl px-4">
+                <span className="text-xs font-bold text-amber-400 uppercase tracking-widest block mb-1">
+                  {filteredItems[activeImageIndex].categoryLabel} ({activeImageIndex + 1} / {filteredItems.length})
+                </span>
+                <h3 className="font-serif font-bold text-xl sm:text-2xl mb-1">
+                  {filteredItems[activeImageIndex].title}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-light">
+                  {filteredItems[activeImageIndex].description}
+                </p>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* CTA Section */}
-      <section className="bg-brand-forest text-white py-12 sm:py-16 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 mx-auto text-brand-sunrise mb-3 sm:mb-4" />
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif font-bold mb-4 sm:mb-6 text-white leading-tight">
-            Ready to Experience It Yourself?
-          </h2>
-          <p className="max-w-2xl mx-auto text-xs sm:text-base md:text-lg opacity-85 mb-6 sm:mb-8 font-light leading-relaxed">
-            Book your luxurious cottage room today or drop us a message for special group retreats and family packages.
+      {/* Bottom Booking Banner */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-r from-brand-forest via-emerald-950 to-slate-950 rounded-3xl p-8 sm:p-12 text-white text-center shadow-xl">
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold mb-4">Want To Experience This In Person?</h2>
+          <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto mb-8 leading-relaxed">
+            Reserve your stay now to immerse in nature, taste farm-fresh organic dining, and unwind in handcrafted luxury.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 max-w-md sm:max-w-none mx-auto">
-            <Link
-              to="/rooms"
-              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-brand-sunrise hover:bg-orange-500 text-white rounded-full font-medium transition-all shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 text-sm sm:text-base"
-            >
-              <span>Book Accommodation</span>
-              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-            </Link>
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-white/10 hover:bg-white/20 text-white border border-white/30 rounded-full font-medium transition-colors flex items-center justify-center space-x-2 text-sm sm:text-base"
-            >
-              <Instagram className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Follow Us on Instagram</span>
-            </a>
-          </div>
+          <button
+            onClick={() => openBookingModal(null)}
+            className="px-8 py-3.5 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-bold uppercase tracking-wider text-xs rounded-full shadow-xl transition hover:scale-105"
+          >
+            Book Your Getaway Today
+          </button>
         </div>
       </section>
+
     </div>
   );
 }
