@@ -11,6 +11,22 @@ export const getAssetUrl = (path: string): string => {
   return `${cleanBase}${cleanPath}`;
 };
 
+export const RESORT_MEDIA_LIBRARY = [
+  { id: 'DSC09103', name: 'BBQ & Mountain Lawn (DSC09103)', path: 'images/resort/optimized/DSC09103.jpg' },
+  { id: 'DSC09130', name: 'Panoramic Valley Overview (DSC09130)', path: 'images/resort/optimized/DSC09130.jpg' },
+  { id: 'DSC09138', name: 'Organic Terrace Farming (DSC09138)', path: 'images/resort/optimized/DSC09138.jpg' },
+  { id: 'DSC09144', name: 'Eco Villa Suite Exterior (DSC09144)', path: 'images/resort/optimized/DSC09144.jpg' },
+  { id: 'DSC09147', name: 'Pine Forest Walking Trails (DSC09147)', path: 'images/resort/optimized/DSC09147.jpg' },
+  { id: 'DSC09148', name: 'Boutique Wooden Cottages (DSC09148)', path: 'images/resort/optimized/DSC09148.jpg' },
+  { id: 'DSC09152', name: 'Campfire & Night Grounds (DSC09152)', path: 'images/resort/optimized/DSC09152.jpg' },
+  { id: 'DSC09153', name: 'Hilltop Horizon View (DSC09153)', path: 'images/resort/optimized/DSC09153.jpg' },
+  { id: 'DSC09154', name: 'Harvest Fields & Gardens (DSC09154)', path: 'images/resort/optimized/DSC09154.jpg' },
+  { id: 'DSC09155', name: 'Timber Cottage Architecture (DSC09155)', path: 'images/resort/optimized/DSC09155.jpg' },
+  { id: 'DSC09162', name: 'Fresh Farm Dining Feast (DSC09162)', path: 'images/resort/optimized/DSC09162.jpg' },
+  { id: 'DSC09163', name: 'Scenic Dining Terrace (DSC09163)', path: 'images/resort/optimized/DSC09163.jpg' },
+  { id: 'ww', name: 'Valley Sanctuary View (ww)', path: 'images/resort/optimized/ww.jpg' }
+];
+
 export const INITIAL_STAFF: StaffUser[] = [
   {
     id: 'staff-1',
@@ -335,7 +351,7 @@ export const DEFAULT_DYNAMIC_CONTENT: WebsiteDynamicContent = {
       title: 'Starlit Campfire & BBQ',
       tagline: 'Nighttime Magic',
       description: 'Unwind under unpolluted Himalayan night skies with acoustic melodies, warm bonfires, and organic barbecue treats.',
-      image: 'images/resort/optimized/DSC09152.jpg',
+      image: 'images/resort/optimized/DSC09103.jpg',
       iconName: 'flame'
     },
     {
@@ -423,5 +439,13 @@ export const DEFAULT_DYNAMIC_CONTENT: WebsiteDynamicContent = {
     guests: '10,000+',
     organicHarvest: '100%',
     tripAdvisorRating: '4.9 ★'
+  },
+  homeCtaBanner: {
+    badgeText: 'Plan Your Himalayan Getaway',
+    title: 'Ready to Experience The Organic Magic of Dada Ghar?',
+    description: 'Book your private wooden cottage or family suite today. Guaranteed best rates and instant confirmation with our resort team.',
+    backgroundImage: 'images/resort/optimized/DSC09130.jpg',
+    primaryCtaText: 'Instant Online Reservation',
+    secondaryCtaText: 'Contact Resort Concierge'
   }
 };

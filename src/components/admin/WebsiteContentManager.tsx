@@ -5,7 +5,7 @@ import {
   Plus,
   Trash2,
   Edit2,
-  Image,
+  Image as ImageIcon,
   Sparkles,
   Phone,
   QrCode,
@@ -23,7 +23,8 @@ import {
   Footprints,
   Coffee,
   Sun,
-  Trees
+  Trees,
+  Check
 } from 'lucide-react';
 import {
   HeroSlide,
@@ -33,9 +34,10 @@ import {
   SanctuarySection,
   CulinarySection,
   ResortStats,
-  ResortContact
+  ResortContact,
+  HomeCtaBanner
 } from '../../types';
-import { getAssetUrl } from '../../services/resortStore';
+import { getAssetUrl, RESORT_MEDIA_LIBRARY } from '../../services/resortStore';
 
 type ContentTab = 'hero' | 'sanctuary' | 'experiences' | 'culinary' | 'testimonials' | 'faqs' | 'stats' | 'contact';
 
@@ -50,21 +52,28 @@ export default function WebsiteContentManager() {
     updateTestimonials,
     updateFaqs,
     updateStats,
+    updateHomeCtaBanner,
     contact,
-    updateContactInfo,
-    resetToDemoData
+    updateContactInfo
   } = useResort();
 
   const [activeTab, setActiveTab] = useState<ContentTab>('hero');
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  // Local state for Sanctuary
+  // Local states
   const [sanctuary, setSanctuary] = useState<SanctuarySection>(dynamicContent.sanctuary);
-  // Local state for Culinary
   const [culinary, setCulinary] = useState<CulinarySection>(dynamicContent.culinary);
-  // Local state for Stats
   const [stats, setStats] = useState<ResortStats>(dynamicContent.stats);
-  // Local state for Contact
+  const [homeCtaBanner, setHomeCtaBanner] = useState<HomeCtaBanner>(
+    dynamicContent.homeCtaBanner || {
+      badgeText: 'Plan Your Himalayan Getaway',
+      title: 'Ready to Experience The Organic Magic of Dada Ghar?',
+      description: 'Book your private wooden cottage or family suite today. Guaranteed best rates and instant confirmation with our resort team.',
+      backgroundImage: 'images/resort/optimized/DSC09130.jpg',
+      primaryCtaText: 'Instant Online Reservation',
+      secondaryCtaText: 'Contact Resort Concierge'
+    }
+  );
   const [contactState, setContactState] = useState<ResortContact>(contact);
 
   // Modals / Item Editing state
@@ -186,6 +195,13 @@ export default function WebsiteContentManager() {
     triggerSaveNotification();
   };
 
+  // Save Home CTA Banner
+  const handleSaveHomeCtaBanner = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateHomeCtaBanner(homeCtaBanner);
+    triggerSaveNotification();
+  };
+
   // Save Contact
   const handleSaveContact = (e: React.FormEvent) => {
     e.preventDefault();
@@ -204,10 +220,10 @@ export default function WebsiteContentManager() {
           </span>
           <h2 className="text-2xl font-serif font-bold text-brand-forest flex items-center gap-2">
             <Sliders className="w-6 h-6 text-brand-leaf" />
-            <span>Website Live Content Manager</span>
+            <span>Website Live Content & Banner Manager</span>
           </h2>
           <p className="text-xs text-gray-500 mt-1">
-            Edit live hero slideshows, curated resort experiences, organic dining, guest reviews, and FAQs in real time.
+            Edit home hero rotating slides, call-to-action banners, experiences, culinary dining, guest reviews, and FAQs.
           </p>
         </div>
 
@@ -222,9 +238,9 @@ export default function WebsiteContentManager() {
       {/* Sub-Navigation Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
         {[
-          { id: 'hero', label: 'Hero Slideshow', icon: Layers },
+          { id: 'hero', label: 'Home Banners & Slides', icon: Layers },
           { id: 'sanctuary', label: 'The Sanctuary Story', icon: Leaf },
-          { id: 'experiences', label: 'Curated Experiences', icon: Sparkles },
+          { id: 'experiences', label: 'Curated Experiences (BBQ, etc.)', icon: Sparkles },
           { id: 'culinary', label: 'Culinary Artistry', icon: Utensils },
           { id: 'testimonials', label: 'Guest Stories', icon: MessageSquare },
           { id: 'faqs', label: 'FAQ Manager', icon: HelpCircle },
@@ -250,84 +266,194 @@ export default function WebsiteContentManager() {
         })}
       </div>
 
-      {/* 1. HERO SLIDESHOW TAB */}
+      {/* 1. HERO SLIDESHOW & HOME BANNER TAB */}
       {activeTab === 'hero' && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-            <div>
-              <h3 className="font-serif font-bold text-lg text-brand-forest">Homepage Rotating Hero Slides</h3>
-              <p className="text-xs text-gray-500">Auto-switches every 5 seconds with smooth parallax crossfade.</p>
+        <div className="space-y-8">
+          
+          {/* Section A: Hero Slideshow */}
+          <div className="space-y-6">
+            <div className="flex items-center justify-between bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+              <div>
+                <h3 className="font-serif font-bold text-lg text-brand-forest">Homepage Top Hero Banner Slides</h3>
+                <p className="text-xs text-gray-500">Auto-switches every 5.5 seconds. Click any slide to edit its image, title, or buttons.</p>
+              </div>
+              <button
+                onClick={() => {
+                  setEditingSlide({
+                    id: '',
+                    image: 'images/resort/optimized/DSC09130.jpg',
+                    badgeText: '5-Star Luxury Agro Retreat • Lele Valley, Nepal',
+                    title: 'Where Sustainable Luxury',
+                    subtitleItalic: 'Meets Raw Mountain Serenity',
+                    description: 'Recharge your soul across 50 acres of pristine organic farms.',
+                    primaryCtaText: 'Reserve Your Stay',
+                    secondaryCtaText: 'Explore Cottages & Suites'
+                  });
+                  setIsSlideModalOpen(true);
+                }}
+                className="px-4 py-2.5 bg-brand-forest hover:bg-emerald-950 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add New Hero Slide</span>
+              </button>
             </div>
-            <button
-              onClick={() => {
-                setEditingSlide({
-                  id: '',
-                  image: 'images/resort/optimized/DSC09130.jpg',
-                  badgeText: '5-Star Luxury Agro Retreat • Lele Valley, Nepal',
-                  title: 'Where Sustainable Luxury',
-                  subtitleItalic: 'Meets Raw Mountain Serenity',
-                  description: 'Recharge your soul across 50 acres of pristine organic farms.',
-                  primaryCtaText: 'Reserve Your Stay',
-                  secondaryCtaText: 'Explore Cottages & Suites'
-                });
-                setIsSlideModalOpen(true);
-              }}
-              className="px-4 py-2.5 bg-brand-forest hover:bg-emerald-950 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add New Hero Slide</span>
-            </button>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {dynamicContent.heroSlides.map((slide, idx) => (
+                <div key={slide.id || idx} className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm flex flex-col justify-between">
+                  <div className="relative h-44 bg-slate-900">
+                    <img
+                      src={getAssetUrl(slide.image)}
+                      alt={slide.title}
+                      className="w-full h-full object-cover opacity-80"
+                    />
+                    <div className="absolute top-3 left-3 px-2.5 py-1 bg-black/60 backdrop-blur-md rounded-lg text-amber-300 text-[10px] font-bold">
+                      Slide #{idx + 1}
+                    </div>
+                  </div>
+
+                  <div className="p-4 space-y-2 flex-1">
+                    <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider block truncate">
+                      {slide.badgeText}
+                    </span>
+                    <h4 className="font-serif font-bold text-base text-gray-900 leading-tight">
+                      {slide.title} <span className="italic text-amber-700">{slide.subtitleItalic}</span>
+                    </h4>
+                    <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed font-light">
+                      {slide.description}
+                    </p>
+                    <div className="pt-2 flex items-center gap-2 text-[10px] text-gray-400 font-mono">
+                      <span className="truncate max-w-[200px]">{slide.image}</span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 border-t bg-gray-50 flex items-center justify-end gap-2">
+                    <button
+                      onClick={() => {
+                        setEditingSlide(slide);
+                        setIsSlideModalOpen(true);
+                      }}
+                      className="px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-bold flex items-center gap-1 transition"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" /> Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteSlide(slide.id)}
+                      className="px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 rounded-lg text-xs font-bold flex items-center gap-1 transition"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {dynamicContent.heroSlides.map((slide, idx) => (
-              <div key={slide.id || idx} className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm flex flex-col justify-between">
-                <div className="relative h-44 bg-slate-900">
-                  <img
-                    src={getAssetUrl(slide.image)}
-                    alt={slide.title}
-                    className="w-full h-full object-cover opacity-80"
-                  />
-                  <div className="absolute top-3 left-3 px-2.5 py-1 bg-black/60 backdrop-blur-md rounded-lg text-amber-300 text-[10px] font-bold">
-                    Slide #{idx + 1}
-                  </div>
-                </div>
+          {/* Section B: Homepage Bottom Call-to-Action Banner */}
+          <form onSubmit={handleSaveHomeCtaBanner} className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+            <div className="flex items-center justify-between border-b pb-4">
+              <div>
+                <h3 className="font-serif font-bold text-xl text-brand-forest">Homepage Bottom Call-to-Action Banner</h3>
+                <p className="text-xs text-gray-500">Edit background photo, title, subtitle, and buttons for the large bottom banner.</p>
+              </div>
+              <button
+                type="submit"
+                className="px-6 py-2.5 bg-brand-forest hover:bg-emerald-950 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow"
+              >
+                <Save className="w-4 h-4" /> Save Bottom Banner
+              </button>
+            </div>
 
-                <div className="p-4 space-y-2 flex-1">
-                  <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider block truncate">
-                    {slide.badgeText}
-                  </span>
-                  <h4 className="font-serif font-bold text-base text-gray-900 leading-tight">
-                    {slide.title} <span className="italic text-amber-700">{slide.subtitleItalic}</span>
-                  </h4>
-                  <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed font-light">
-                    {slide.description}
-                  </p>
-                  <div className="pt-2 flex items-center gap-2 text-[10px] text-gray-400 font-mono">
-                    <span className="truncate max-w-[200px]">{slide.image}</span>
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Banner Badge Text</label>
+                <input
+                  type="text"
+                  value={homeCtaBanner.badgeText}
+                  onChange={e => setHomeCtaBanner({ ...homeCtaBanner, badgeText: e.target.value })}
+                  className="w-full px-4 py-2.5 bg-gray-50 border rounded-xl text-xs font-medium outline-none"
+                />
+              </div>
 
-                <div className="p-3 border-t bg-gray-50 flex items-center justify-end gap-2">
-                  <button
-                    onClick={() => {
-                      setEditingSlide(slide);
-                      setIsSlideModalOpen(true);
-                    }}
-                    className="px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-bold flex items-center gap-1 transition"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" /> Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteSlide(slide.id)}
-                    className="px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 rounded-lg text-xs font-bold flex items-center gap-1 transition"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" /> Delete
-                  </button>
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Banner Title</label>
+                <input
+                  type="text"
+                  value={homeCtaBanner.title}
+                  onChange={e => setHomeCtaBanner({ ...homeCtaBanner, title: e.target.value })}
+                  className="w-full px-4 py-2.5 bg-gray-50 border rounded-xl text-xs font-medium outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Banner Description</label>
+              <textarea
+                rows={2}
+                value={homeCtaBanner.description}
+                onChange={e => setHomeCtaBanner({ ...homeCtaBanner, description: e.target.value })}
+                className="w-full px-4 py-2.5 bg-gray-50 border rounded-xl text-xs font-medium outline-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-50 rounded-2xl border">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Banner Background Image URL / Path</label>
+                <input
+                  type="text"
+                  value={homeCtaBanner.backgroundImage}
+                  onChange={e => setHomeCtaBanner({ ...homeCtaBanner, backgroundImage: e.target.value })}
+                  className="w-full px-4 py-2 bg-white border rounded-xl text-xs font-mono outline-none"
+                />
+                
+                {/* Visual Image Selector Quick Picker */}
+                <div className="mt-3">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase block mb-1.5">Quick Pick from Resort Media:</span>
+                  <div className="grid grid-cols-4 gap-2">
+                    {RESORT_MEDIA_LIBRARY.slice(0, 8).map((media) => (
+                      <button
+                        type="button"
+                        key={media.id}
+                        onClick={() => setHomeCtaBanner({ ...homeCtaBanner, backgroundImage: media.path })}
+                        className={`relative rounded-lg overflow-hidden h-14 border-2 transition ${
+                          homeCtaBanner.backgroundImage === media.path ? 'border-amber-500 scale-105' : 'border-transparent opacity-75 hover:opacity-100'
+                        }`}
+                      >
+                        <img src={getAssetUrl(media.path)} alt={media.name} className="w-full h-full object-cover" />
+                        {homeCtaBanner.backgroundImage === media.path && (
+                          <div className="absolute inset-0 bg-amber-500/30 flex items-center justify-center">
+                            <Check className="w-4 h-4 text-white drop-shadow" />
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Primary CTA Button</label>
+                  <input
+                    type="text"
+                    value={homeCtaBanner.primaryCtaText}
+                    onChange={e => setHomeCtaBanner({ ...homeCtaBanner, primaryCtaText: e.target.value })}
+                    className="w-full px-4 py-2 bg-white border rounded-xl text-xs font-medium outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Secondary CTA Button</label>
+                  <input
+                    type="text"
+                    value={homeCtaBanner.secondaryCtaText}
+                    onChange={e => setHomeCtaBanner({ ...homeCtaBanner, secondaryCtaText: e.target.value })}
+                    className="w-full px-4 py-2 bg-white border rounded-xl text-xs font-medium outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+          </form>
+
         </div>
       )}
 
@@ -446,13 +572,20 @@ export default function WebsiteContentManager() {
                 onChange={e => setSanctuary({ ...sanctuary, featuredImage: e.target.value })}
                 className="w-full px-4 py-2 bg-white border rounded-xl text-xs font-mono outline-none"
               />
-              {sanctuary.featuredImage && (
-                <img
-                  src={getAssetUrl(sanctuary.featuredImage)}
-                  alt="Featured preview"
-                  className="w-full h-32 object-cover rounded-xl mt-2 border"
-                />
-              )}
+              
+              {/* Quick Image Picker */}
+              <div className="mt-2 grid grid-cols-4 gap-1.5">
+                {RESORT_MEDIA_LIBRARY.slice(0, 4).map((media) => (
+                  <button
+                    type="button"
+                    key={media.id}
+                    onClick={() => setSanctuary({ ...sanctuary, featuredImage: media.path })}
+                    className="h-12 rounded border overflow-hidden opacity-80 hover:opacity-100"
+                  >
+                    <img src={getAssetUrl(media.path)} alt={media.name} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -479,13 +612,13 @@ export default function WebsiteContentManager() {
         </form>
       )}
 
-      {/* 3. CURATED EXPERIENCES TAB */}
+      {/* 3. CURATED EXPERIENCES TAB (INCLUDING BBQ) */}
       {activeTab === 'experiences' && (
         <div className="space-y-6">
           <div className="flex items-center justify-between bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
             <div>
               <h3 className="font-serif font-bold text-lg text-brand-forest">Curated Resort Experiences</h3>
-              <p className="text-xs text-gray-500">Agro activities, nature trails, bonfires, and organic tours.</p>
+              <p className="text-xs text-gray-500">Agro activities, nature trails, Starlit BBQ & bonfire (DSC09103), and organic tours.</p>
             </div>
             <button
               onClick={() => {
@@ -518,6 +651,11 @@ export default function WebsiteContentManager() {
                   <div className="absolute top-3 left-3 px-2.5 py-1 bg-white/90 rounded-lg text-brand-forest text-[10px] font-bold">
                     Icon: {exp.iconName}
                   </div>
+                  {exp.image.includes('DSC09103') && (
+                    <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-amber-500 text-slate-950 text-[9px] font-bold rounded">
+                      DSC09103
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-4 space-y-1.5 flex-1">
@@ -646,13 +784,20 @@ export default function WebsiteContentManager() {
                 onChange={e => setCulinary({ ...culinary, image: e.target.value })}
                 className="w-full px-4 py-2 bg-white border rounded-xl text-xs font-mono outline-none"
               />
-              {culinary.image && (
-                <img
-                  src={getAssetUrl(culinary.image)}
-                  alt="Culinary preview"
-                  className="w-full h-32 object-cover rounded-xl mt-2 border"
-                />
-              )}
+              
+              {/* Quick Image Picker */}
+              <div className="mt-2 grid grid-cols-4 gap-1.5">
+                {RESORT_MEDIA_LIBRARY.slice(8, 12).map((media) => (
+                  <button
+                    type="button"
+                    key={media.id}
+                    onClick={() => setCulinary({ ...culinary, image: media.path })}
+                    className="h-12 rounded border overflow-hidden opacity-80 hover:opacity-100"
+                  >
+                    <img src={getAssetUrl(media.path)} alt={media.name} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="space-y-3">
@@ -983,7 +1128,7 @@ export default function WebsiteContentManager() {
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 relative max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-serif font-bold text-brand-forest mb-4">
-              {editingSlide.id ? 'Edit Hero Slide' : 'Add New Hero Slide'}
+              {editingSlide.id ? 'Edit Hero Banner Slide' : 'Add New Hero Banner Slide'}
             </h3>
             <div className="space-y-3 text-xs">
               <div>
@@ -995,9 +1140,22 @@ export default function WebsiteContentManager() {
                   placeholder="e.g. images/resort/optimized/DSC09130.jpg"
                   className="w-full px-3 py-2 bg-gray-50 border rounded-xl font-mono"
                 />
-                {editingSlide.image && (
-                  <img src={getAssetUrl(editingSlide.image)} alt="preview" className="w-full h-28 object-cover rounded-xl mt-2 border" />
-                )}
+                
+                {/* Media Picker */}
+                <div className="mt-2 grid grid-cols-4 gap-1.5">
+                  {RESORT_MEDIA_LIBRARY.map((media) => (
+                    <button
+                      type="button"
+                      key={media.id}
+                      onClick={() => setEditingSlide({ ...editingSlide, image: media.path })}
+                      className={`h-12 rounded border overflow-hidden transition ${
+                        editingSlide.image === media.path ? 'ring-2 ring-amber-500 scale-105' : 'opacity-70 hover:opacity-100'
+                      }`}
+                    >
+                      <img src={getAssetUrl(media.path)} alt={media.name} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div>
@@ -1118,12 +1276,12 @@ export default function WebsiteContentManager() {
                     onChange={e => setEditingExperience({ ...editingExperience, iconName: e.target.value })}
                     className="w-full px-3 py-2 bg-gray-50 border rounded-xl"
                   >
-                    <option value="leaf">🌿 Leaf (Organic/Agro)</option>
-                    <option value="utensils">🍴 Utensils (Dining/Food)</option>
-                    <option value="flame">🔥 Flame (Campfire/BBQ)</option>
-                    <option value="footprints">👣 Footprints (Trails/Hikes)</option>
-                    <option value="sun">☀️ Sun (Wellness/Yoga)</option>
-                    <option value="coffee">☕ Coffee (Morning/Herbal)</option>
+                    <option value="flame">🔥 Flame (Campfire & BBQ)</option>
+                    <option value="leaf">🌿 Leaf (Organic & Agro)</option>
+                    <option value="utensils">🍴 Utensils (Dining & Food)</option>
+                    <option value="footprints">👣 Footprints (Trails & Hikes)</option>
+                    <option value="sun">☀️ Sun (Wellness & Yoga)</option>
+                    <option value="coffee">☕ Coffee (Morning & Herbal)</option>
                   </select>
                 </div>
               </div>
@@ -1136,9 +1294,22 @@ export default function WebsiteContentManager() {
                   onChange={e => setEditingExperience({ ...editingExperience, image: e.target.value })}
                   className="w-full px-3 py-2 bg-gray-50 border rounded-xl font-mono"
                 />
-                {editingExperience.image && (
-                  <img src={getAssetUrl(editingExperience.image)} alt="preview" className="w-full h-28 object-cover rounded-xl mt-2 border" />
-                )}
+                
+                {/* Media Quick Picker */}
+                <div className="mt-2 grid grid-cols-4 gap-1.5">
+                  {RESORT_MEDIA_LIBRARY.map((media) => (
+                    <button
+                      type="button"
+                      key={media.id}
+                      onClick={() => setEditingExperience({ ...editingExperience, image: media.path })}
+                      className={`h-12 rounded border overflow-hidden transition ${
+                        editingExperience.image === media.path ? 'ring-2 ring-amber-500 scale-105' : 'opacity-70 hover:opacity-100'
+                      }`}
+                    >
+                      <img src={getAssetUrl(media.path)} alt={media.name} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div>

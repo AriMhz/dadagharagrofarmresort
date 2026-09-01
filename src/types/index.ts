@@ -212,6 +212,15 @@ export interface ResortStats {
   tripAdvisorRating: string;
 }
 
+export interface HomeCtaBanner {
+  badgeText: string;
+  title: string;
+  description: string;
+  backgroundImage: string;
+  primaryCtaText: string;
+  secondaryCtaText: string;
+}
+
 export interface WebsiteDynamicContent {
   heroSlides: HeroSlide[];
   sanctuary: SanctuarySection;
@@ -220,4 +229,5 @@ export interface WebsiteDynamicContent {
   testimonials: GuestTestimonial[];
   faqs: FaqItem[];
   stats: ResortStats;
+  homeCtaBanner: HomeCtaBanner;
 }

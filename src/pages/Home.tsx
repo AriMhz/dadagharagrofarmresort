@@ -26,12 +26,12 @@ import { getAssetUrl } from "../services/resortStore";
 
 const renderExperienceIcon = (iconName: string) => {
   switch (iconName) {
+    case 'flame':
+      return <Flame className="w-5 h-5 text-amber-600" />;
     case 'leaf':
       return <Leaf className="w-5 h-5 text-amber-600" />;
     case 'utensils':
       return <Utensils className="w-5 h-5 text-amber-600" />;
-    case 'flame':
-      return <Flame className="w-5 h-5 text-amber-600" />;
     case 'footprints':
       return <Footprints className="w-5 h-5 text-amber-600" />;
     case 'sun':
@@ -45,7 +45,7 @@ const renderExperienceIcon = (iconName: string) => {
 
 export default function Home() {
   const { rooms, openBookingModal, dynamicContent } = useResort();
-  const { heroSlides, sanctuary, experiences, culinary, testimonials, faqs, stats } = dynamicContent;
+  const { heroSlides, sanctuary, experiences, culinary, testimonials, faqs, stats, homeCtaBanner } = dynamicContent;
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -86,6 +86,15 @@ export default function Home() {
   };
 
   const currentSlide = heroSlides[currentSlideIndex] || heroSlides[0];
+
+  const bottomBanner = homeCtaBanner || {
+    badgeText: 'Plan Your Himalayan Getaway',
+    title: 'Ready to Experience The Organic Magic of Dada Ghar?',
+    description: 'Book your private wooden cottage or family suite today. Guaranteed best rates and instant confirmation with our resort team.',
+    backgroundImage: 'images/resort/optimized/DSC09130.jpg',
+    primaryCtaText: 'Instant Online Reservation',
+    secondaryCtaText: 'Contact Resort Concierge'
+  };
 
   return (
     <div className="w-full bg-[#FAF7F2] text-slate-800 overflow-hidden">
@@ -454,7 +463,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. CURATED EXPERIENCES & ACTIVITIES (DYNAMIC) */}
+      {/* 5. CURATED EXPERIENCES & ACTIVITIES (DYNAMIC WITH BBQ DSC09103) */}
       <section id="activities" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold text-amber-700 uppercase tracking-widest block mb-2">
@@ -708,34 +717,46 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 10. LUXURY CTA FOOTER BANNER */}
+      {/* 10. LUXURY CTA FOOTER BANNER (DYNAMIC IMAGE & TEXT FROM ADMIN PANEL) */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="bg-gradient-to-r from-brand-forest via-emerald-950 to-slate-950 rounded-3xl p-8 sm:p-14 text-white shadow-2xl text-center relative overflow-hidden">
+        <div className="relative rounded-3xl p-8 sm:p-14 text-white shadow-2xl text-center overflow-hidden border border-white/15">
+          
+          {/* Background Image with Dark Gradient Overlay */}
+          <div className="absolute inset-0 z-0">
+            <img
+              src={getAssetUrl(bottomBanner.backgroundImage)}
+              alt="Dada Ghar Resort Banner"
+              className="w-full h-full object-cover filter brightness-[0.45]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-brand-forest/90 via-emerald-950/80 to-slate-950/90" />
+          </div>
+
           <div className="relative z-10 max-w-3xl mx-auto">
             <span className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full text-amber-300 text-xs font-bold uppercase tracking-widest mb-4 border border-white/15">
-              Plan Your Himalayan Getaway
+              {bottomBanner.badgeText}
             </span>
             <h2 className="text-3xl sm:text-5xl font-serif font-bold text-white mb-6 leading-tight">
-              Ready to Experience The Organic Magic of Dada Ghar?
+              {bottomBanner.title}
             </h2>
-            <p className="text-slate-300 text-base sm:text-lg mb-8 leading-relaxed">
-              Book your private wooden cottage or family suite today. Guaranteed best rates and instant confirmation with our resort team.
+            <p className="text-slate-200 text-base sm:text-lg mb-8 leading-relaxed font-light">
+              {bottomBanner.description}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
                 onClick={() => openBookingModal(null)}
                 className="px-8 py-4 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-bold uppercase tracking-wider text-xs rounded-full shadow-2xl transition hover:scale-105"
               >
-                Instant Online Reservation
+                {bottomBanner.primaryCtaText}
               </button>
               <Link
                 to="/contact"
                 className="px-8 py-4 bg-white/15 hover:bg-white/25 text-white font-bold uppercase tracking-wider text-xs rounded-full border border-white/30 transition"
               >
-                Contact Resort Concierge
+                {bottomBanner.secondaryCtaText}
               </Link>
             </div>
           </div>
+
         </div>
       </section>
 

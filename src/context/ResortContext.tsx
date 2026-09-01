@@ -18,7 +18,8 @@ import {
   CulinarySection,
   GuestTestimonial,
   FaqItem,
-  ResortStats
+  ResortStats,
+  HomeCtaBanner
 } from '../types';
 import {
   INITIAL_ROOMS,
@@ -60,6 +61,7 @@ interface ResortContextType {
   updateTestimonials: (testimonials: GuestTestimonial[]) => void;
   updateFaqs: (faqs: FaqItem[]) => void;
   updateStats: (stats: ResortStats) => void;
+  updateHomeCtaBanner: (banner: HomeCtaBanner) => void;
 
   // Staff User Management
   addStaffUser: (user: Omit<StaffUser, 'id' | 'active'>) => void;
@@ -96,17 +98,17 @@ interface ResortContextType {
 const ResortContext = createContext<ResortContextType | undefined>(undefined);
 
 const LOCAL_STORAGE_KEYS = {
-  ROOMS: 'dada_ghar_rooms_v2',
-  BOOKINGS: 'dada_ghar_bookings_v2',
-  MENU_ITEMS: 'dada_ghar_menu_v2',
-  CUSTOMERS: 'dada_ghar_customers_v2',
-  CONTACT: 'dada_ghar_contact_v2',
-  INVOICES: 'dada_ghar_invoices_v2',
-  STAFF: 'dada_ghar_staff_v2',
-  AUTH_USER: 'dada_ghar_auth_user_v2',
-  REMEMBERED_USER: 'dada_ghar_remembered_user_v2',
-  REMEMBER_ME: 'dada_ghar_remember_me_v2',
-  DYNAMIC_CONTENT: 'dada_ghar_dynamic_content_v2'
+  ROOMS: 'dada_ghar_rooms_v3',
+  BOOKINGS: 'dada_ghar_bookings_v3',
+  MENU_ITEMS: 'dada_ghar_menu_v3',
+  CUSTOMERS: 'dada_ghar_customers_v3',
+  CONTACT: 'dada_ghar_contact_v3',
+  INVOICES: 'dada_ghar_invoices_v3',
+  STAFF: 'dada_ghar_staff_v3',
+  AUTH_USER: 'dada_ghar_auth_user_v3',
+  REMEMBERED_USER: 'dada_ghar_remembered_user_v3',
+  REMEMBER_ME: 'dada_ghar_remember_me_v3',
+  DYNAMIC_CONTENT: 'dada_ghar_dynamic_content_v3'
 };
 
 export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -147,7 +149,19 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const [dynamicContent, setDynamicContent] = useState<WebsiteDynamicContent>(() => {
     const stored = localStorage.getItem(LOCAL_STORAGE_KEYS.DYNAMIC_CONTENT);
-    return stored ? JSON.parse(stored) : DEFAULT_DYNAMIC_CONTENT;
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        return {
+          ...DEFAULT_DYNAMIC_CONTENT,
+          ...parsed,
+          homeCtaBanner: parsed.homeCtaBanner || DEFAULT_DYNAMIC_CONTENT.homeCtaBanner
+        };
+      } catch {
+        return DEFAULT_DYNAMIC_CONTENT;
+      }
+    }
+    return DEFAULT_DYNAMIC_CONTENT;
   });
 
   const [currentStaffUser, setCurrentStaffUser] = useState<StaffUser | null>(() => {
@@ -285,6 +299,10 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const updateStats = (stats: ResortStats) => {
     setDynamicContent(prev => ({ ...prev, stats }));
+  };
+
+  const updateHomeCtaBanner = (banner: HomeCtaBanner) => {
+    setDynamicContent(prev => ({ ...prev, homeCtaBanner: banner }));
   };
 
   // Staff User Management
@@ -602,6 +620,7 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       updateTestimonials,
       updateFaqs,
       updateStats,
+      updateHomeCtaBanner,
       addStaffUser,
       updateStaffUser,
       deleteStaffUser,
