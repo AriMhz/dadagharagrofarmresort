@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Calendar,
   Users,
@@ -11,137 +11,70 @@ import {
   Utensils,
   Flame,
   Sun,
-  Award,
   Sparkles,
   ChevronDown,
   Quote,
   Trees,
-  Camera,
-  HeartHandshake,
   CheckCircle2,
-  MapPin,
-  Clock,
-  Wine,
-  Compass,
-  Footprints,
-  ChevronRight
+  ChevronLeft,
+  ChevronRight,
+  Footprints
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useResort } from "../context/ResortContext";
+import { getAssetUrl } from "../services/resortStore";
 
-interface Testimonial {
-  id: number;
-  name: string;
-  location: string;
-  role: string;
-  rating: number;
-  comment: string;
-  avatar: string;
-  stayType: string;
-}
-
-const testimonials: Testimonial[] = [
-  {
-    id: 1,
-    name: "Siddharth & Ananya Sharma",
-    location: "Kathmandu, Nepal",
-    role: "Family Vacationers",
-    rating: 5,
-    stayType: "Family Villa Suite",
-    comment: "Dada Ghar Agro Farm Resort is pure magic! Waking up to misty Himalayan ridges, harvesting fresh organic strawberries with our children, and the heavenly farmhouse dinner made this the best weekend retreat we've ever experienced.",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
-  },
-  {
-    id: 2,
-    name: "David & Sarah Miller",
-    location: "London, United Kingdom",
-    role: "Nature Lovers & Hikers",
-    rating: 5,
-    stayType: "Agro Wooden Cottage",
-    comment: "The wooden cottages seamlessly blend rustic organic charm with 5-star comfort. The evening campfire under the starlit mountain sky with freshly brewed herbal tea and authentic local hospitality was unforgettable.",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
-  },
-  {
-    id: 3,
-    name: "Pooja & Rohan Shrestha",
-    location: "Pokhara, Nepal",
-    role: "Anniversary Celebration",
-    rating: 5,
-    stayType: "Deluxe Sunset Room",
-    comment: "Unmatched serenity, incredibly attentive staff, and 100% chemical-free organic cuisine. If you want peace, fresh mountain air, and luxurious relaxation away from city noise, Dada Ghar is the ultimate sanctuary.",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
-  },
-];
-
-const faqs = [
-  {
-    question: "What is included in an agro farm luxury stay at Dada Ghar?",
-    answer: "Every stay includes luxury cottage or villa accommodation, complimentary farm-to-table organic breakfast, guided farm tour with fruit & vegetable harvesting, access to nature trails, evening campfire gatherings, and high-speed Wi-Fi throughout the resort.",
-  },
-  {
-    question: "Is all food served at the resort 100% organic and locally harvested?",
-    answer: "Yes! Over 90% of all vegetables, herbs, dairy, honey, and fruits served at our restaurant are cultivated directly in our pesticide-free organic agro fields. Any supplemental ingredients are sourced from verified local eco-farms in the valley.",
-  },
-  {
-    question: "Can families with children participate in farm activities?",
-    answer: "Absolutely! We offer hands-on family experiences including strawberry picking, vegetable harvesting, clay pottery workshops, gentle nature bird-watching walks, and traditional butter churning sessions.",
-  },
-  {
-    question: "How do I reach Dada Ghar Agro Farm Resort from Kathmandu / Lalitpur?",
-    answer: "We are located in the scenic valley of Lele, Lalitpur, approximately a 45-minute picturesque drive from Patan / Ring Road. We also provide private resort pickup transfers upon request.",
-  },
-  {
-    question: "What payment and booking methods are accepted?",
-    answer: "You can reserve directly on our website, through instant WhatsApp booking, or with advance QR payments (Fonepay, eSewa, Khalti, or major Cards). We also accept cash settlements at front desk checkout.",
-  },
-];
-
-const signatureExperiences = [
-  {
-    icon: Leaf,
-    title: "Organic Farm Harvesting",
-    tagline: "Hands-on Agro Tourism",
-    description: "Pluck ripe strawberries, crisp salad greens, and seasonal vegetables directly from the soil alongside our master farm stewards.",
-    image: "https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    icon: Utensils,
-    title: "Farm-to-Table Gourmet",
-    tagline: "100% Chemical-Free",
-    description: "Savor authentic Nepali Thakali feasts, wood-fired pizzas, herbal teas, and garden soups crafted from morning harvests.",
-    image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    icon: Flame,
-    title: "Starlit Campfire & BBQ",
-    tagline: "Nighttime Magic",
-    description: "Unwind under unpolluted Himalayan night skies with acoustic melodies, warm bonfires, and organic barbecue treats.",
-    image: "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    icon: Footprints,
-    title: "Pine Forest Nature Trails",
-    tagline: "Guided Eco Walks",
-    description: "Explore hidden valley trails, bird sanctuaries, and tranquil riverbanks breathing pure mountain oxygen.",
-    image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80"
-  },
-];
+const renderExperienceIcon = (iconName: string) => {
+  switch (iconName) {
+    case 'leaf':
+      return <Leaf className="w-5 h-5 text-amber-600" />;
+    case 'utensils':
+      return <Utensils className="w-5 h-5 text-amber-600" />;
+    case 'flame':
+      return <Flame className="w-5 h-5 text-amber-600" />;
+    case 'footprints':
+      return <Footprints className="w-5 h-5 text-amber-600" />;
+    case 'sun':
+      return <Sun className="w-5 h-5 text-amber-600" />;
+    case 'coffee':
+      return <Coffee className="w-5 h-5 text-amber-600" />;
+    default:
+      return <Sparkles className="w-5 h-5 text-amber-600" />;
+  }
+};
 
 export default function Home() {
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 1000], [0, 250]);
+  const { rooms, openBookingModal, dynamicContent } = useResort();
+  const { heroSlides, sanctuary, experiences, culinary, testimonials, faqs, stats } = dynamicContent;
+
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const { rooms, openBookingModal } = useResort();
 
   // Booking search bar states
   const [checkIn, setCheckIn] = useState(new Date().toISOString().split('T')[0]);
   const [checkOut, setCheckOut] = useState(new Date(Date.now() + 86400000).toISOString().split('T')[0]);
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const [guestsCount, setGuestsCount] = useState("2");
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Auto-switching hero slider every 5.5 seconds
+  useEffect(() => {
+    if (!heroSlides || heroSlides.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentSlideIndex((prev) => (prev + 1) % heroSlides.length);
+    }, 5500);
+    return () => clearInterval(interval);
+  }, [heroSlides]);
+
+  const nextSlide = () => {
+    setCurrentSlideIndex((prev) => (prev + 1) % heroSlides.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlideIndex((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+  };
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -152,69 +85,83 @@ export default function Home() {
     openBookingModal(null);
   };
 
+  const currentSlide = heroSlides[currentSlideIndex] || heroSlides[0];
+
   return (
     <div className="w-full bg-[#FAF7F2] text-slate-800 overflow-hidden">
       
-      {/* 1. HERO SECTION - Cinematic Luxury Parallax */}
-      <section className="relative min-h-[92vh] lg:min-h-screen flex items-center justify-center overflow-hidden">
+      {/* 1. HERO SECTION - Auto-Switching Parallax Slideshow with Real Resort Photos */}
+      <section className="relative min-h-[92vh] lg:min-h-screen flex items-center justify-center overflow-hidden bg-slate-950">
         
-        {/* Parallax Background Image with Dark Vignette */}
-        <motion.div style={{ y }} className="absolute inset-0 z-0">
-          <img
-            src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=2200&q=85"
-            alt="Dada Ghar Agro Farm Resort landscape"
-            className="w-full h-[125%] object-cover object-center filter brightness-[0.78]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0D2112] via-black/40 to-black/60" />
-        </motion.div>
+        {/* Animated Background Image Carousel with Cross-Fade */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentSlideIndex}
+            initial={{ opacity: 0, scale: 1.08 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            className="absolute inset-0 z-0"
+          >
+            <img
+              src={getAssetUrl(currentSlide.image)}
+              alt={currentSlide.title}
+              className="w-full h-full object-cover object-center filter brightness-[0.75]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0D2112] via-black/45 to-black/65" />
+          </motion.div>
+        </AnimatePresence>
 
-        {/* Hero Content */}
+        {/* Hero Slide Content */}
         <div className="relative z-10 text-center px-4 max-w-5xl mx-auto pt-28 pb-32">
           
           {/* Trust Badge */}
           <motion.div
+            key={`badge-${currentSlideIndex}`}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-amber-300 border border-white/20 text-xs sm:text-sm font-semibold tracking-wide mb-6 shadow-xl"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-amber-300 border border-white/20 text-xs sm:text-sm font-semibold tracking-wide mb-6 shadow-xl"
           >
             <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
-            <span>5-Star Luxury Agro Retreat &bull; Lele Valley, Nepal</span>
+            <span>{currentSlide.badgeText}</span>
           </motion.div>
 
           {/* Heading */}
           <motion.h1
+            key={`title-${currentSlideIndex}`}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.15 }}
             className="text-4xl sm:text-6xl md:text-7xl font-serif text-white font-bold leading-[1.1] tracking-tight mb-6 drop-shadow-lg"
           >
-            Where Sustainable Luxury <br />
-            <span className="font-display italic text-amber-300 font-normal">Meets Raw Mountain Serenity</span>
+            {currentSlide.title} <br />
+            <span className="font-display italic text-amber-300 font-normal">{currentSlide.subtitleItalic}</span>
           </motion.h1>
 
           {/* Subtitle */}
           <motion.p
+            key={`desc-${currentSlideIndex}`}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
             className="text-base sm:text-xl md:text-2xl text-slate-200 font-light tracking-wide mb-10 max-w-3xl mx-auto leading-relaxed drop-shadow"
           >
-            Recharge your soul across 50 acres of pristine organic farms, handcrafted wooden villas, and farm-to-table culinary artistry.
+            {currentSlide.description}
           </motion.p>
 
           {/* Action Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
+            transition={{ duration: 0.8, delay: 0.45 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5"
           >
             <button
               onClick={() => openBookingModal(null)}
               className="px-8 py-4 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-white rounded-full font-bold uppercase tracking-wider text-xs sm:text-sm transition-all duration-300 shadow-2xl hover:shadow-amber-500/30 hover:scale-105 active:scale-95 flex items-center justify-center gap-2.5 w-full sm:w-auto border border-amber-300/40"
             >
-              <span>Reserve Your Stay</span>
+              <span>{currentSlide.primaryCtaText || "Reserve Your Stay"}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 
@@ -222,16 +169,49 @@ export default function Home() {
               to="/rooms"
               className="px-8 py-4 bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/40 rounded-full font-bold uppercase tracking-wider text-xs sm:text-sm transition-all duration-300 w-full sm:w-auto hover:scale-105"
             >
-              Explore Cottages & Suites
+              {currentSlide.secondaryCtaText || "Explore Cottages & Suites"}
             </Link>
           </motion.div>
+
         </div>
 
-        {/* Ambient Bottom Scroll Prompt */}
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 text-white/70 flex flex-col items-center gap-1.5 animate-bounce pointer-events-none">
-          <span className="text-[10px] uppercase tracking-widest font-semibold">Scroll to discover</span>
-          <ChevronDown className="w-4 h-4" />
-        </div>
+        {/* Carousel Navigation Arrows */}
+        {heroSlides.length > 1 && (
+          <>
+            <button
+              onClick={prevSlide}
+              aria-label="Previous Slide"
+              className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/30 hover:bg-black/60 text-white/80 hover:text-white backdrop-blur-md border border-white/20 transition shadow-lg"
+            >
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+            <button
+              onClick={nextSlide}
+              aria-label="Next Slide"
+              className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/30 hover:bg-black/60 text-white/80 hover:text-white backdrop-blur-md border border-white/20 transition shadow-lg"
+            >
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+          </>
+        )}
+
+        {/* Slide Indicator Dots */}
+        {heroSlides.length > 1 && (
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex items-center gap-2.5">
+            {heroSlides.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentSlideIndex(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                className={`transition-all duration-500 rounded-full ${
+                  currentSlideIndex === idx
+                    ? "w-8 h-2.5 bg-amber-400 shadow-md"
+                    : "w-2.5 h-2.5 bg-white/40 hover:bg-white/75"
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* 2. FLOATING LUXURY BOOKING BAR */}
@@ -293,7 +273,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 3. WELCOME & PHILOSOPHY SECTION */}
+      {/* 3. THE SANCTUARY OF DADA GHAR (DYNAMIC) */}
       <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           
@@ -304,17 +284,17 @@ export default function Home() {
             transition={{ duration: 0.8 }}
           >
             <span className="inline-block px-3.5 py-1 bg-amber-500/10 text-amber-800 border border-amber-500/20 text-xs font-bold uppercase tracking-widest rounded-full mb-3">
-              The Sanctuary of Dada Ghar
+              {sanctuary.badgeText}
             </span>
             <h2 className="text-3xl sm:text-5xl font-serif text-brand-forest font-bold leading-tight mb-6">
-              A Return to What Truly <br />
-              <span className="font-display italic text-amber-700 font-normal">Nourishes The Soul</span>
+              {sanctuary.title} <br />
+              <span className="font-display italic text-amber-700 font-normal">{sanctuary.titleItalic}</span>
             </h2>
             <p className="text-slate-600 text-base sm:text-lg leading-relaxed mb-6">
-              Perched high in the peaceful hills of Lele, Lalitpur, Dada Ghar is an intentional sanctuary designed for travelers who yearn for stillness, organic wellness, and meaningful connection with nature.
+              {sanctuary.paragraph1}
             </p>
             <p className="text-slate-600 text-base sm:text-lg leading-relaxed mb-8">
-              Here, your morning coffee is accompanied by birdsong, your meals are harvested minutes before they reach your plate, and your nights are spent by crackling fireplaces under crystal-clear mountain skies.
+              {sanctuary.paragraph2}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
@@ -323,8 +303,8 @@ export default function Home() {
                   <Leaf className="w-5 h-5 text-brand-leaf" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm">100% Certified Organic</h4>
-                  <p className="text-xs text-slate-500 mt-0.5">Pesticide-free vegetables, raw honey & herbs.</p>
+                  <h4 className="font-bold text-slate-900 text-sm">{sanctuary.highlight1Title}</h4>
+                  <p className="text-xs text-slate-500 mt-0.5">{sanctuary.highlight1Desc}</p>
                 </div>
               </div>
 
@@ -333,8 +313,8 @@ export default function Home() {
                   <Shield className="w-5 h-5 text-amber-600" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm">Handcrafted Cottages</h4>
-                  <p className="text-xs text-slate-500 mt-0.5">Eco-luxury wooden architecture with 5-star comfort.</p>
+                  <h4 className="font-bold text-slate-900 text-sm">{sanctuary.highlight2Title}</h4>
+                  <p className="text-xs text-slate-500 mt-0.5">{sanctuary.highlight2Desc}</p>
                 </div>
               </div>
             </div>
@@ -357,7 +337,7 @@ export default function Home() {
           >
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
               <img
-                src="https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1000&q=80"
+                src={getAssetUrl(sanctuary.featuredImage)}
                 alt="Dada Ghar luxury wooden cottage suite"
                 className="w-full h-[480px] object-cover hover:scale-105 transition-transform duration-700"
               />
@@ -366,10 +346,10 @@ export default function Home() {
               <div className="absolute bottom-6 left-6 right-6 p-5 bg-white/90 backdrop-blur-md rounded-2xl border border-white/40 text-slate-900 shadow-xl">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-amber-700 tracking-wider">Featured Accommodation</span>
-                    <h4 className="font-serif font-bold text-lg text-brand-forest">Agro Wooden Villa Suite</h4>
+                    <span className="text-[10px] uppercase font-bold text-amber-700 tracking-wider">{sanctuary.featuredRoomLabel}</span>
+                    <h4 className="font-serif font-bold text-lg text-brand-forest">{sanctuary.featuredRoomTitle}</h4>
                   </div>
-                  <span className="font-mono font-bold text-amber-700 text-sm">NPR 6,000 / night</span>
+                  <span className="font-mono font-bold text-amber-700 text-sm">{sanctuary.featuredRoomPrice}</span>
                 </div>
               </div>
             </div>
@@ -418,7 +398,7 @@ export default function Home() {
               >
                 <div className="relative h-64 overflow-hidden">
                   <img
-                    src={room.image}
+                    src={getAssetUrl(room.image)}
                     alt={room.roomNumber}
                     className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
                   />
@@ -474,7 +454,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. SIGNATURE EXPERIENCES & ACTIVITIES */}
+      {/* 5. CURATED EXPERIENCES & ACTIVITIES (DYNAMIC) */}
       <section id="activities" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold text-amber-700 uppercase tracking-widest block mb-2">
@@ -489,48 +469,45 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {signatureExperiences.map((exp, idx) => {
-            const Icon = exp.icon;
-            return (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col group"
-              >
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={exp.image}
-                    alt={exp.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                  <div className="absolute top-4 left-4 p-2.5 bg-white/90 backdrop-blur-md rounded-2xl text-brand-forest shadow">
-                    <Icon className="w-5 h-5 text-amber-600" />
-                  </div>
+          {experiences.map((exp, idx) => (
+            <motion.div
+              key={exp.id || idx}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
+              className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col group"
+            >
+              <div className="relative h-48 overflow-hidden">
+                <img
+                  src={getAssetUrl(exp.image)}
+                  alt={exp.title}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute top-4 left-4 p-2.5 bg-white/90 backdrop-blur-md rounded-2xl text-brand-forest shadow">
+                  {renderExperienceIcon(exp.iconName)}
                 </div>
+              </div>
 
-                <div className="p-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block mb-1">
-                      {exp.tagline}
-                    </span>
-                    <h3 className="font-serif font-bold text-lg text-brand-forest mb-2">
-                      {exp.title}
-                    </h3>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      {exp.description}
-                    </p>
-                  </div>
+              <div className="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block mb-1">
+                    {exp.tagline}
+                  </span>
+                  <h3 className="font-serif font-bold text-lg text-brand-forest mb-2">
+                    {exp.title}
+                  </h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {exp.description}
+                  </p>
                 </div>
-              </motion.div>
-            );
-          })}
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
 
-      {/* 6. FARM-TO-TABLE GASTRONOMY SPOTLIGHT */}
+      {/* 6. FARM-TO-TABLE GASTRONOMY / CULINARY ARTISTRY (DYNAMIC) */}
       <section className="py-20 bg-gradient-to-br from-[#19381F] via-[#0D2112] to-slate-950 text-white relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -538,42 +515,48 @@ export default function Home() {
             <div className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10">
                 <img
-                  src="https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=1000&q=80"
+                  src={getAssetUrl(culinary.image)}
                   alt="Organic farm-to-table dining"
                   className="w-full h-[460px] object-cover"
                 />
               </div>
               <div className="absolute -bottom-6 -left-6 bg-amber-500 text-slate-950 p-5 rounded-2xl shadow-2xl border-2 border-white/20 hidden sm:block">
-                <span className="font-serif font-bold text-2xl block">100%</span>
-                <span className="text-xs font-bold uppercase tracking-wider">Organic Certified</span>
+                <span className="font-serif font-bold text-2xl block">{culinary.cornerBadgeNumber}</span>
+                <span className="text-xs font-bold uppercase tracking-wider">{culinary.cornerBadgeText}</span>
               </div>
             </div>
 
             <div className="space-y-6">
               <span className="inline-block px-3.5 py-1 bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-bold uppercase tracking-widest rounded-full">
-                Culinary Artistry
+                {culinary.badgeText}
               </span>
               <h2 className="text-3xl sm:text-5xl font-serif text-white font-bold leading-tight">
-                Fresh From Our Earth, <br />
-                <span className="font-display italic text-amber-300 font-normal">Prepared With Heart</span>
+                {culinary.title} <br />
+                <span className="font-display italic text-amber-300 font-normal">{culinary.titleItalic}</span>
               </h2>
               <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
-                At Dada Ghar, dining is a celebration of seasonal harvest. We cultivate heirloom vegetables, organic rice, mountain herbs, and wild berries right on our resort grounds.
+                {culinary.description}
               </p>
 
               <div className="space-y-3.5 pt-2">
-                <div className="flex items-center gap-3 text-slate-200 text-sm">
-                  <CheckCircle2 className="w-5 h-5 text-amber-400 shrink-0" />
-                  <span>Daily morning harvests for restaurant recipes</span>
-                </div>
-                <div className="flex items-center gap-3 text-slate-200 text-sm">
-                  <CheckCircle2 className="w-5 h-5 text-amber-400 shrink-0" />
-                  <span>Authentic Thakali Set, Wood-Fired Roasts, and Herbal Infusions</span>
-                </div>
-                <div className="flex items-center gap-3 text-slate-200 text-sm">
-                  <CheckCircle2 className="w-5 h-5 text-amber-400 shrink-0" />
-                  <span>Outdoor dining terraces with panoramic sunset views</span>
-                </div>
+                {culinary.bullet1 && (
+                  <div className="flex items-center gap-3 text-slate-200 text-sm">
+                    <CheckCircle2 className="w-5 h-5 text-amber-400 shrink-0" />
+                    <span>{culinary.bullet1}</span>
+                  </div>
+                )}
+                {culinary.bullet2 && (
+                  <div className="flex items-center gap-3 text-slate-200 text-sm">
+                    <CheckCircle2 className="w-5 h-5 text-amber-400 shrink-0" />
+                    <span>{culinary.bullet2}</span>
+                  </div>
+                )}
+                {culinary.bullet3 && (
+                  <div className="flex items-center gap-3 text-slate-200 text-sm">
+                    <CheckCircle2 className="w-5 h-5 text-amber-400 shrink-0" />
+                    <span>{culinary.bullet3}</span>
+                  </div>
+                )}
               </div>
 
               <div className="pt-4">
@@ -591,28 +574,28 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 7. NUMBERS & IMPACT COUNTER */}
+      {/* 7. NUMBERS & IMPACT COUNTER (DYNAMIC) */}
       <section className="py-16 bg-[#FAF7F2] border-b border-gray-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
             
             <div className="p-6 bg-white rounded-3xl border border-gray-100 shadow-sm">
-              <span className="font-serif font-bold text-3xl sm:text-4xl text-brand-forest block">50+</span>
+              <span className="font-serif font-bold text-3xl sm:text-4xl text-brand-forest block">{stats.acres}</span>
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1 block">Acres Organic Farmland</span>
             </div>
 
             <div className="p-6 bg-white rounded-3xl border border-gray-100 shadow-sm">
-              <span className="font-serif font-bold text-3xl sm:text-4xl text-amber-700 block">10,000+</span>
+              <span className="font-serif font-bold text-3xl sm:text-4xl text-amber-700 block">{stats.guests}</span>
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1 block">Happy Retreat Guests</span>
             </div>
 
             <div className="p-6 bg-white rounded-3xl border border-gray-100 shadow-sm">
-              <span className="font-serif font-bold text-3xl sm:text-4xl text-brand-forest block">100%</span>
+              <span className="font-serif font-bold text-3xl sm:text-4xl text-brand-forest block">{stats.organicHarvest}</span>
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1 block">Pesticide Free Harvest</span>
             </div>
 
             <div className="p-6 bg-white rounded-3xl border border-gray-100 shadow-sm">
-              <span className="font-serif font-bold text-3xl sm:text-4xl text-amber-700 block">4.9 ★</span>
+              <span className="font-serif font-bold text-3xl sm:text-4xl text-amber-700 block">{stats.tripAdvisorRating}</span>
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1 block">TripAdvisor Rating</span>
             </div>
 
@@ -620,7 +603,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 8. VERIFIED GUEST TESTIMONIALS */}
+      {/* 8. VERIFIED GUEST STORIES / TESTIMONIALS (DYNAMIC) */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold text-amber-700 uppercase tracking-widest block mb-2">
@@ -674,7 +657,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 9. FAQ ACCORDION */}
+      {/* 9. FAQ ACCORDION (DYNAMIC) */}
       <section className="py-20 bg-white border-t border-gray-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -692,7 +675,7 @@ export default function Home() {
               const isOpen = openFaq === idx;
               return (
                 <div
-                  key={idx}
+                  key={faq.id || idx}
                   className="bg-[#FAF7F2] rounded-2xl border border-gray-200/80 overflow-hidden transition"
                 >
                   <button
@@ -732,7 +715,7 @@ export default function Home() {
             <span className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full text-amber-300 text-xs font-bold uppercase tracking-widest mb-4 border border-white/15">
               Plan Your Himalayan Getaway
             </span>
-            <h2 className="text-3xl sm:text-5xl font-serif font-bold mb-6 leading-tight">
+            <h2 className="text-3xl sm:text-5xl font-serif font-bold text-white mb-6 leading-tight">
               Ready to Experience The Organic Magic of Dada Ghar?
             </h2>
             <p className="text-slate-300 text-base sm:text-lg mb-8 leading-relaxed">

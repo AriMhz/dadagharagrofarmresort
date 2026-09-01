@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useResort } from '../../context/ResortContext';
 import { Room, RoomCategory, RoomStatus } from '../../types';
 import { Plus, Edit2, Trash2, Bed, Check, X, Image as ImageIcon, Users, DollarSign } from 'lucide-react';
+import { getAssetUrl } from '../../services/resortStore';
 
 export default function RoomManagement() {
   const { rooms, addRoom, updateRoom, deleteRoom } = useResort();
@@ -26,7 +27,7 @@ export default function RoomManagement() {
     setPricePerNight(4000);
     setCapacity(2);
     setStatus('Available');
-    setImage('https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80');
+    setImage('images/resort/optimized/DSC09130.jpg');
     setDescription('');
     setAmenitiesInput('Free Wi-Fi, AC, Mountain View, Attached Bathroom');
     setIsModalOpen(true);
@@ -112,7 +113,7 @@ export default function RoomManagement() {
           >
             <div className="relative h-48 bg-gray-100 overflow-hidden group">
               <img 
-                src={room.image} 
+                src={getAssetUrl(room.image)} 
                 alt={room.roomNumber} 
                 className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
               />
@@ -176,38 +177,41 @@ export default function RoomManagement() {
         ))}
       </div>
 
-      {/* Modal for Add / Edit Room */}
+      {/* Add / Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 relative max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b pb-4 mb-4">
-              <h3 className="text-lg font-serif font-bold text-brand-forest">
-                {editingRoom ? `Edit Room ${editingRoom.roomNumber}` : 'Add New Room'}
+          <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b pb-4 mb-6">
+              <h3 className="text-lg font-serif font-bold text-gray-900">
+                {editingRoom ? `Edit Room ${editingRoom.roomNumber}` : 'Add New Resort Room'}
               </h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4 text-sm">
+            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Room Number</label>
+                  <label className="block font-bold text-gray-700 uppercase mb-1">Room Number *</label>
                   <input
                     type="text"
                     required
                     value={roomNumber}
                     onChange={e => setRoomNumber(e.target.value)}
-                    placeholder="e.g. 203"
-                    className="w-full px-3 py-2 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-brand-leaf outline-none"
+                    placeholder="e.g. 101, 201, C-1"
+                    className="w-full px-3.5 py-2.5 bg-gray-50 border rounded-xl font-medium outline-none focus:ring-2 focus:ring-brand-leaf"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Category</label>
+                  <label className="block font-bold text-gray-700 uppercase mb-1">Category *</label>
                   <select
                     value={category}
                     onChange={e => setCategory(e.target.value as RoomCategory)}
-                    className="w-full px-3 py-2 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-brand-leaf outline-none"
+                    className="w-full px-3.5 py-2.5 bg-gray-50 border rounded-xl font-medium outline-none focus:ring-2 focus:ring-brand-leaf"
                   >
                     <option value="Deluxe Room">Deluxe Room</option>
                     <option value="Super Deluxe Room">Super Deluxe Room</option>
@@ -220,33 +224,34 @@ export default function RoomManagement() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Price / Night (NPR)</label>
+                  <label className="block font-bold text-gray-700 uppercase mb-1">Price (NPR) *</label>
                   <input
                     type="number"
                     required
-                    min={100}
+                    min={500}
                     value={pricePerNight}
                     onChange={e => setPricePerNight(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-brand-leaf outline-none font-mono"
+                    className="w-full px-3.5 py-2.5 bg-gray-50 border rounded-xl font-mono font-medium outline-none focus:ring-2 focus:ring-brand-leaf"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Max Guests</label>
+                  <label className="block font-bold text-gray-700 uppercase mb-1">Capacity *</label>
                   <input
                     type="number"
                     required
                     min={1}
+                    max={10}
                     value={capacity}
                     onChange={e => setCapacity(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-brand-leaf outline-none"
+                    className="w-full px-3.5 py-2.5 bg-gray-50 border rounded-xl font-medium outline-none focus:ring-2 focus:ring-brand-leaf"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Current Status</label>
+                  <label className="block font-bold text-gray-700 uppercase mb-1">Status *</label>
                   <select
                     value={status}
                     onChange={e => setStatus(e.target.value as RoomStatus)}
-                    className="w-full px-3 py-2 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-brand-leaf outline-none"
+                    className="w-full px-3.5 py-2.5 bg-gray-50 border rounded-xl font-medium outline-none focus:ring-2 focus:ring-brand-leaf"
                   >
                     <option value="Available">Available</option>
                     <option value="Occupied">Occupied</option>
@@ -258,50 +263,57 @@ export default function RoomManagement() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Room Photo Image URL</label>
+                <label className="block font-bold text-gray-700 uppercase mb-1">Image URL / Path *</label>
                 <input
-                  type="url"
+                  type="text"
                   required
                   value={image}
                   onChange={e => setImage(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-brand-leaf outline-none"
+                  placeholder="e.g. images/resort/optimized/DSC09130.jpg"
+                  className="w-full px-3.5 py-2.5 bg-gray-50 border rounded-xl font-mono outline-none focus:ring-2 focus:ring-brand-leaf"
                 />
+                {image && (
+                  <img 
+                    src={getAssetUrl(image)} 
+                    alt="Preview" 
+                    className="w-full h-28 object-cover rounded-xl mt-2 border"
+                  />
+                )}
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Description</label>
-                <textarea
-                  rows={2}
-                  value={description}
-                  onChange={e => setDescription(e.target.value)}
-                  placeholder="Brief description of room views, beds, features..."
-                  className="w-full px-3 py-2 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-brand-leaf outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Amenities (comma separated)</label>
+                <label className="block font-bold text-gray-700 uppercase mb-1">Amenities (Comma separated)</label>
                 <input
                   type="text"
                   value={amenitiesInput}
                   onChange={e => setAmenitiesInput(e.target.value)}
-                  placeholder="Free Wi-Fi, AC, Mountain View, Hot Shower"
-                  className="w-full px-3 py-2 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-brand-leaf outline-none"
+                  placeholder="Free Wi-Fi, AC, Attached Bathroom, Mountain View"
+                  className="w-full px-3.5 py-2.5 bg-gray-50 border rounded-xl font-medium outline-none focus:ring-2 focus:ring-brand-leaf"
                 />
               </div>
 
-              <div className="pt-4 border-t flex justify-end gap-3">
+              <div>
+                <label className="block font-bold text-gray-700 uppercase mb-1">Description</label>
+                <textarea
+                  rows={2}
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  placeholder="Brief overview of the room and features..."
+                  className="w-full px-3.5 py-2.5 bg-gray-50 border rounded-xl font-medium outline-none focus:ring-2 focus:ring-brand-leaf"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition"
+                  className="px-4 py-2.5 text-gray-600 hover:bg-gray-100 rounded-xl transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-brand-forest text-white rounded-xl hover:bg-emerald-950 font-medium transition"
+                  className="px-6 py-2.5 bg-brand-forest hover:bg-emerald-950 text-white font-bold rounded-xl shadow transition"
                 >
                   {editingRoom ? 'Save Changes' : 'Create Room'}
                 </button>

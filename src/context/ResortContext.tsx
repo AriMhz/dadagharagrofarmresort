@@ -1,6 +1,34 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Room, Booking, MenuItem, Customer, ResortContact, Invoice, BookingStatus, PaymentStatus, PaymentMethod, OrderItem, StaffUser, StaffRole } from '../types';
-import { INITIAL_ROOMS, INITIAL_BOOKINGS, INITIAL_MENU_ITEMS, INITIAL_CUSTOMERS, DEFAULT_CONTACT, INITIAL_STAFF } from '../services/resortStore';
+import {
+  Room,
+  Booking,
+  MenuItem,
+  Customer,
+  ResortContact,
+  Invoice,
+  BookingStatus,
+  PaymentStatus,
+  PaymentMethod,
+  OrderItem,
+  StaffUser,
+  WebsiteDynamicContent,
+  HeroSlide,
+  SanctuarySection,
+  ResortExperience,
+  CulinarySection,
+  GuestTestimonial,
+  FaqItem,
+  ResortStats
+} from '../types';
+import {
+  INITIAL_ROOMS,
+  INITIAL_BOOKINGS,
+  INITIAL_MENU_ITEMS,
+  INITIAL_CUSTOMERS,
+  DEFAULT_CONTACT,
+  INITIAL_STAFF,
+  DEFAULT_DYNAMIC_CONTENT
+} from '../services/resortStore';
 
 interface ResortContextType {
   rooms: Room[];
@@ -14,6 +42,7 @@ interface ResortContextType {
   isAdminLoggedIn: boolean;
   isBookingModalOpen: boolean;
   activeBookingModalRoom: Room | null;
+  dynamicContent: WebsiteDynamicContent;
 
   // Authentication Actions
   loginAdmin: (username: string, pass: string, rememberMe?: boolean) => boolean;
@@ -22,6 +51,16 @@ interface ResortContextType {
   openBookingModal: (room?: Room | null) => void;
   closeBookingModal: () => void;
   
+  // Dynamic Website Content Management
+  updateDynamicContent: (content: WebsiteDynamicContent) => void;
+  updateHeroSlides: (slides: HeroSlide[]) => void;
+  updateSanctuary: (sanctuary: SanctuarySection) => void;
+  updateExperiences: (experiences: ResortExperience[]) => void;
+  updateCulinary: (culinary: CulinarySection) => void;
+  updateTestimonials: (testimonials: GuestTestimonial[]) => void;
+  updateFaqs: (faqs: FaqItem[]) => void;
+  updateStats: (stats: ResortStats) => void;
+
   // Staff User Management
   addStaffUser: (user: Omit<StaffUser, 'id' | 'active'>) => void;
   updateStaffUser: (user: StaffUser) => void;
@@ -57,16 +96,17 @@ interface ResortContextType {
 const ResortContext = createContext<ResortContextType | undefined>(undefined);
 
 const LOCAL_STORAGE_KEYS = {
-  ROOMS: 'dada_ghar_rooms_v1',
-  BOOKINGS: 'dada_ghar_bookings_v1',
-  MENU_ITEMS: 'dada_ghar_menu_v1',
-  CUSTOMERS: 'dada_ghar_customers_v1',
-  CONTACT: 'dada_ghar_contact_v1',
-  INVOICES: 'dada_ghar_invoices_v1',
-  STAFF: 'dada_ghar_staff_v1',
-  AUTH_USER: 'dada_ghar_auth_user_v1',
-  REMEMBERED_USER: 'dada_ghar_remembered_user_v1',
-  REMEMBER_ME: 'dada_ghar_remember_me_v1'
+  ROOMS: 'dada_ghar_rooms_v2',
+  BOOKINGS: 'dada_ghar_bookings_v2',
+  MENU_ITEMS: 'dada_ghar_menu_v2',
+  CUSTOMERS: 'dada_ghar_customers_v2',
+  CONTACT: 'dada_ghar_contact_v2',
+  INVOICES: 'dada_ghar_invoices_v2',
+  STAFF: 'dada_ghar_staff_v2',
+  AUTH_USER: 'dada_ghar_auth_user_v2',
+  REMEMBERED_USER: 'dada_ghar_remembered_user_v2',
+  REMEMBER_ME: 'dada_ghar_remember_me_v2',
+  DYNAMIC_CONTENT: 'dada_ghar_dynamic_content_v2'
 };
 
 export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -105,8 +145,12 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return stored ? JSON.parse(stored) : INITIAL_STAFF;
   });
 
+  const [dynamicContent, setDynamicContent] = useState<WebsiteDynamicContent>(() => {
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEYS.DYNAMIC_CONTENT);
+    return stored ? JSON.parse(stored) : DEFAULT_DYNAMIC_CONTENT;
+  });
+
   const [currentStaffUser, setCurrentStaffUser] = useState<StaffUser | null>(() => {
-    // Check localStorage first, then sessionStorage
     const localUser = localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER);
     if (localUser) {
       try { return JSON.parse(localUser); } catch { /* ignore */ }
@@ -151,6 +195,10 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEYS.STAFF, JSON.stringify(staffUsers));
   }, [staffUsers]);
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEYS.DYNAMIC_CONTENT, JSON.stringify(dynamicContent));
+  }, [dynamicContent]);
 
   // Actions
   const loginStaff = (username: string, pass: string, rememberMe: boolean = true): StaffUser | null => {
@@ -204,6 +252,39 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const closeBookingModal = () => {
     setIsBookingModalOpen(false);
     setActiveBookingModalRoom(null);
+  };
+
+  // Dynamic Content Setters
+  const updateDynamicContent = (newContent: WebsiteDynamicContent) => {
+    setDynamicContent(newContent);
+  };
+
+  const updateHeroSlides = (slides: HeroSlide[]) => {
+    setDynamicContent(prev => ({ ...prev, heroSlides: slides }));
+  };
+
+  const updateSanctuary = (sanctuary: SanctuarySection) => {
+    setDynamicContent(prev => ({ ...prev, sanctuary }));
+  };
+
+  const updateExperiences = (experiences: ResortExperience[]) => {
+    setDynamicContent(prev => ({ ...prev, experiences }));
+  };
+
+  const updateCulinary = (culinary: CulinarySection) => {
+    setDynamicContent(prev => ({ ...prev, culinary }));
+  };
+
+  const updateTestimonials = (testimonials: GuestTestimonial[]) => {
+    setDynamicContent(prev => ({ ...prev, testimonials }));
+  };
+
+  const updateFaqs = (faqs: FaqItem[]) => {
+    setDynamicContent(prev => ({ ...prev, faqs }));
+  };
+
+  const updateStats = (stats: ResortStats) => {
+    setDynamicContent(prev => ({ ...prev, stats }));
   };
 
   // Staff User Management
@@ -287,14 +368,12 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     setBookings(prev => [newBooking, ...prev]);
 
-    // Automatically update room status if Checked-in or Confirmed
     if (data.status === 'Checked-in') {
       setRooms(prev => prev.map(r => r.id === data.roomId ? { ...r, status: 'Occupied' } : r));
     } else if (data.status === 'Confirmed') {
       setRooms(prev => prev.map(r => r.id === data.roomId ? { ...r, status: 'Reserved' } : r));
     }
 
-    // Sync Customer Record
     addOrUpdateCustomerFromBooking(data.guestName, data.guestPhone, data.guestEmail, grandTotal);
 
     return newBooking;
@@ -329,7 +408,6 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (b.id === id) {
         const updated = { ...b, status, ...(paymentStatus ? { paymentStatus } : {}) };
         
-        // Dynamic Room status transition
         if (status === 'Checked-in') {
           setRooms(roomsPrev => roomsPrev.map(r => r.id === b.roomId ? { ...r, status: 'Occupied' } : r));
         } else if (status === 'Checked-out') {
@@ -406,7 +484,6 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const totalPaid = finalPaidAmount !== undefined ? finalPaidAmount : booking.grandTotal;
     
-    // Calculate breakdown
     const foodAndBeverageCharges = booking.orders
       .filter(o => o.category === 'Food' || o.category === 'Beverage')
       .reduce((s, o) => s + (o.price * o.quantity), 0);
@@ -463,7 +540,6 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     setInvoices(prev => [newInvoice, ...prev]);
 
-    // Mark booking as Checked-out & Paid
     updateBookingStatus(bookingId, 'Checked-out', totalPaid >= booking.grandTotal ? 'Paid' : 'Partial');
 
     return newInvoice;
@@ -492,6 +568,7 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setCustomers(INITIAL_CUSTOMERS);
     setContact(DEFAULT_CONTACT);
     setStaffUsers(INITIAL_STAFF);
+    setDynamicContent(DEFAULT_DYNAMIC_CONTENT);
     setInvoices([]);
     setCurrentStaffUser(null);
     localStorage.clear();
@@ -511,11 +588,20 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       isAdminLoggedIn,
       isBookingModalOpen,
       activeBookingModalRoom,
+      dynamicContent,
       loginAdmin,
       loginStaff,
       logoutAdmin,
       openBookingModal,
       closeBookingModal,
+      updateDynamicContent,
+      updateHeroSlides,
+      updateSanctuary,
+      updateExperiences,
+      updateCulinary,
+      updateTestimonials,
+      updateFaqs,
+      updateStats,
       addStaffUser,
       updateStaffUser,
       deleteStaffUser,

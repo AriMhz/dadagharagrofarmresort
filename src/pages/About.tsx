@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { Leaf, Shield, HeartHandshake, Sun, Trees, Award, Users, CheckCircle2, ArrowRight, Sparkles, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useResort } from "../context/ResortContext";
+import { getAssetUrl } from "../services/resortStore";
 
 const milestones = [
   {
@@ -13,7 +14,7 @@ const milestones = [
   {
     year: "2021",
     title: "Handcrafting The Cottages",
-    description: "Constructed the first 3 sustainable wooden cottages using local stone, pine timber, and solar energy systems."
+    description: "Constructed the first sustainable wooden cottages using local stone, pine timber, and solar energy systems."
   },
   {
     year: "2024",
@@ -60,9 +61,9 @@ export default function About() {
       
       {/* 1. HERO HEADER */}
       <section className="relative py-16 sm:py-24 bg-gradient-to-b from-[#19381F] to-[#0D2112] text-white overflow-hidden mb-16">
-        <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="absolute inset-0 opacity-25 pointer-events-none">
           <img
-            src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=80"
+            src={getAssetUrl("images/resort/optimized/DSC09130.jpg")}
             alt="Dada Ghar Agro farm hills"
             className="w-full h-full object-cover"
           />
@@ -106,7 +107,7 @@ export default function About() {
           <div className="relative">
             <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
               <img
-                src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80"
+                src={getAssetUrl("images/resort/optimized/DSC09148.jpg")}
                 alt="Our Pristine Agro Farmland"
                 className="w-full h-[480px] object-cover"
               />

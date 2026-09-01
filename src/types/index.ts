@@ -138,9 +138,86 @@ export interface ResortContact {
   };
 }
 
-export interface WebsiteContent {
-  resortName: string;
+// Dynamic Website Content Types
+export interface HeroSlide {
+  id: string;
+  image: string;
+  badgeText: string;
+  title: string;
+  subtitleItalic: string;
+  description: string;
+  primaryCtaText: string;
+  secondaryCtaText: string;
+}
+
+export interface SanctuarySection {
+  badgeText: string;
+  title: string;
+  titleItalic: string;
+  paragraph1: string;
+  paragraph2: string;
+  highlight1Title: string;
+  highlight1Desc: string;
+  highlight2Title: string;
+  highlight2Desc: string;
+  featuredImage: string;
+  featuredRoomLabel: string;
+  featuredRoomTitle: string;
+  featuredRoomPrice: string;
+}
+
+export interface ResortExperience {
+  id: string;
+  title: string;
   tagline: string;
-  heroNotice: string;
-  contact: ResortContact;
+  description: string;
+  image: string;
+  iconName: string;
+}
+
+export interface CulinarySection {
+  badgeText: string;
+  title: string;
+  titleItalic: string;
+  description: string;
+  bullet1: string;
+  bullet2: string;
+  bullet3: string;
+  image: string;
+  cornerBadgeNumber: string;
+  cornerBadgeText: string;
+}
+
+export interface GuestTestimonial {
+  id: string;
+  name: string;
+  location: string;
+  role: string;
+  rating: number;
+  comment: string;
+  avatar: string;
+  stayType: string;
+}
+
+export interface FaqItem {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+export interface ResortStats {
+  acres: string;
+  guests: string;
+  organicHarvest: string;
+  tripAdvisorRating: string;
+}
+
+export interface WebsiteDynamicContent {
+  heroSlides: HeroSlide[];
+  sanctuary: SanctuarySection;
+  experiences: ResortExperience[];
+  culinary: CulinarySection;
+  testimonials: GuestTestimonial[];
+  faqs: FaqItem[];
+  stats: ResortStats;
 }

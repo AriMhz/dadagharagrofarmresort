@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useResort } from "../context/ResortContext";
 import { Users, CheckCircle2, Bed, Calendar, Wifi, Coffee, Sparkles, Shield, Sun, Eye, ArrowRight, Heart } from "lucide-react";
 import { Room } from "../types";
+import { getAssetUrl } from "../services/resortStore";
 
 const inclusions = [
   { icon: Coffee, title: "Organic Farm Breakfast", desc: "Complimentary wholesome morning breakfast harvested from our farm." },
@@ -97,54 +98,57 @@ export default function Rooms() {
               {/* Room Visual */}
               <div className="lg:w-1/2 relative min-h-[320px] lg:min-h-[420px] overflow-hidden">
                 <img
-                  src={room.image}
-                  alt={`Room ${room.roomNumber}`}
+                  src={getAssetUrl(room.image)}
+                  alt={`${room.category} - Room ${room.roomNumber}`}
                   className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
                 />
-                
-                <div className="absolute top-6 left-6 bg-brand-forest/95 backdrop-blur-md text-amber-300 px-4 py-1.5 rounded-full font-mono font-bold text-xs shadow-md border border-amber-300/30">
+
+                <div className="absolute top-4 left-4 bg-brand-forest/90 backdrop-blur-md text-amber-300 px-3.5 py-1.5 rounded-full text-xs font-mono font-bold tracking-wider shadow">
                   Room {room.roomNumber}
                 </div>
 
-                <div className="absolute top-6 right-6 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl shadow-xl font-mono text-right">
-                  <span className="text-[10px] text-slate-500 uppercase font-semibold block">Starting from</span>
-                  <span className="font-bold text-brand-forest text-lg">NPR {room.pricePerNight.toLocaleString()}</span>
-                  <span className="text-[10px] text-slate-500 block">/ night</span>
-                </div>
-
-                <div className={`absolute bottom-6 left-6 px-3.5 py-1 rounded-full text-xs font-bold uppercase shadow-lg ${
+                <div className={`absolute top-4 right-4 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-md ${
                   room.status === 'Available' ? 'bg-emerald-500 text-white' :
                   room.status === 'Occupied' ? 'bg-rose-500 text-white' :
                   'bg-amber-500 text-white'
                 }`}>
                   {room.status}
                 </div>
+
+                <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-md text-brand-forest px-5 py-2 rounded-2xl font-bold font-mono text-base shadow-xl">
+                  NPR {room.pricePerNight.toLocaleString()} <span className="text-xs font-normal text-slate-500">/ night</span>
+                </div>
               </div>
 
               {/* Room Details */}
-              <div className="lg:w-1/2 p-8 sm:p-12 flex flex-col justify-between">
+              <div className="lg:w-1/2 p-8 sm:p-10 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between gap-4 mb-3">
-                    <h2 className="text-2xl sm:text-3xl font-serif font-bold text-brand-forest">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold text-amber-700 uppercase tracking-widest">
                       {room.category}
-                    </h2>
-                    <span className="text-xs text-slate-600 font-semibold px-3 py-1 bg-amber-50 text-amber-900 rounded-full border border-amber-200 shrink-0 flex items-center gap-1">
-                      <Users className="w-3.5 h-3.5 text-amber-600" /> Max {room.capacity} Guests
                     </span>
+                    <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
+                      <Users className="w-4 h-4 text-amber-600" />
+                      <span>Capacity: {room.capacity} Guests</span>
+                    </div>
                   </div>
 
-                  <p className="text-slate-600 text-sm leading-relaxed mb-6">
+                  <h3 className="font-serif font-bold text-2xl sm:text-3xl text-brand-forest mb-4">
+                    {room.category} &bull; Room {room.roomNumber}
+                  </h3>
+
+                  <p className="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
                     {room.description}
                   </p>
 
                   <div className="mb-8">
-                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
-                      Suite Features & Amenities
-                    </h3>
-                    <div className="grid grid-cols-2 gap-2.5 text-xs text-slate-700">
-                      {room.amenities.map((amenity, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+                      Included Room Amenities
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      {room.amenities.map((amenity, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-xs text-slate-700 font-medium">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                           <span>{amenity}</span>
                         </div>
                       ))}
@@ -152,39 +156,45 @@ export default function Rooms() {
                   </div>
                 </div>
 
+                {/* Bottom Actions */}
                 <div className="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center gap-4">
                   <button
                     onClick={() => openBookingModal(room)}
-                    className="w-full sm:w-auto px-8 py-3.5 bg-brand-forest hover:bg-emerald-950 text-white font-bold uppercase tracking-wider text-xs rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+                    className="w-full sm:flex-1 py-3.5 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-white font-bold uppercase tracking-wider text-xs rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
                   >
-                    <Calendar className="w-4 h-4 text-amber-400" />
-                    <span>Book Room {room.roomNumber}</span>
+                    <Calendar className="w-4 h-4" />
+                    <span>Reserve Room {room.roomNumber}</span>
                   </button>
 
-                  <span className="text-[11px] text-slate-500">
-                    Instant confirmation &bull; No advance required to inquiry
-                  </span>
+                  <a
+                    href={`https://wa.me/9779851234567?text=Hello%20Dada%20Ghar%20Resort,%20I%20would%20like%20to%20inquire%20about%20Room%20${room.roomNumber}%20(${encodeURIComponent(room.category)}).`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full sm:w-auto px-5 py-3.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider rounded-xl transition border border-emerald-200 text-center"
+                  >
+                    WhatsApp Inquiry
+                  </a>
                 </div>
-              </div>
 
+              </div>
             </motion.div>
           ))}
         </div>
       </div>
 
-      {/* 4. INCLUSIONS & PRIVILEGES */}
-      <section className="py-20 bg-white border-y border-gray-100 mb-20">
+      {/* 4. COMPLIMENTARY INCLUSIONS GRID */}
+      <section className="py-20 bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="text-xs font-bold text-amber-700 uppercase tracking-widest block mb-2">
-              The Dada Ghar Difference
+              Every Stay Inclusions
             </span>
-            <h2 className="text-3xl sm:text-4xl font-serif text-brand-forest font-bold mb-4">
-              Complimentary Inclusions With Every Stay
+            <h2 className="text-3xl sm:text-4xl font-serif text-brand-forest font-bold mb-3">
+              Included with Every Reservation
             </h2>
             <p className="text-slate-600 text-sm sm:text-base">
-              Every guest at our resort enjoys tailored comforts crafted to make your retreat deeply restorative.
+              We ensure your time at Dada Ghar is deeply relaxing, wholesome, and worry-free.
             </p>
           </div>
 
@@ -192,15 +202,12 @@ export default function Rooms() {
             {inclusions.map((item, idx) => {
               const Icon = item.icon;
               return (
-                <div
-                  key={idx}
-                  className="p-6 bg-[#FAF7F2] rounded-3xl border border-gray-200/80 shadow-sm flex flex-col"
-                >
-                  <div className="w-12 h-12 bg-emerald-100 text-brand-forest rounded-2xl flex items-center justify-center mb-4">
-                    <Icon className="w-6 h-6 text-brand-leaf" />
+                <div key={idx} className="p-6 bg-[#FAF7F2] rounded-3xl border border-gray-200/80 shadow-sm text-center">
+                  <div className="w-12 h-12 bg-amber-500/10 text-amber-700 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-amber-500/20">
+                    <Icon className="w-6 h-6" />
                   </div>
-                  <h3 className="font-serif font-bold text-base text-slate-900 mb-1">{item.title}</h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">{item.desc}</p>
+                  <h4 className="font-serif font-bold text-lg text-slate-900 mb-1.5">{item.title}</h4>
+                  <p className="text-xs text-slate-600 leading-relaxed">{item.desc}</p>
                 </div>
               );
             })}
@@ -209,26 +216,23 @@ export default function Rooms() {
         </div>
       </section>
 
-      {/* 5. STAY POLICIES */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white p-8 sm:p-10 rounded-3xl border border-gray-200/80 shadow-md">
-          <h3 className="font-serif font-bold text-xl text-brand-forest mb-4">Resort Stay Policies & Guidelines</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-slate-600">
-            <div>
-              <span className="font-bold text-slate-900 block mb-1">Check-in & Check-out</span>
-              <p>Check-in: from 2:00 PM<br />Check-out: by 11:00 AM. Early check-in available upon request.</p>
-            </div>
-            <div>
-              <span className="font-bold text-slate-900 block mb-1">Organic Farm Etiquette</span>
-              <p>Guests are invited to join fruit and herb harvesting under the guidance of our farm horticulturists.</p>
-            </div>
-            <div>
-              <span className="font-bold text-slate-900 block mb-1">Eco-Sanctuary Noise Policy</span>
-              <p>We honor tranquility. Quiet hours begin at 10:00 PM for restful stargazing and sleep.</p>
-            </div>
-          </div>
+      {/* 5. BOTTOM CTA */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+        <div className="bg-gradient-to-r from-brand-forest via-emerald-950 to-slate-950 rounded-3xl p-8 sm:p-12 text-white text-center shadow-xl">
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white mb-4">
+            Need a Custom Group or Family Cottage Package?
+          </h2>
+          <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto mb-8 leading-relaxed">
+            Contact our resort concierge directly for customized team retreats, wedding ceremonies, or large family bookings.
+          </p>
+          <button
+            onClick={() => openBookingModal(null)}
+            className="px-8 py-3.5 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-bold uppercase tracking-wider text-xs rounded-full shadow-xl transition hover:scale-105"
+          >
+            Inquire For Custom Booking
+          </button>
         </div>
-      </div>
+      </section>
 
     </div>
   );
